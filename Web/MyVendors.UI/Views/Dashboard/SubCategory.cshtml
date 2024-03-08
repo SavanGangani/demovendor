@@ -1,0 +1,509 @@
+﻿@model MyVendors.BAL.Models.UserProfile
+
+@{
+    ViewBag.Title = "SubCategory";
+    Layout = "~/Views/Shared/_MyVendorLayout.cshtml";
+}
+@{ 
+    var API_URL = System.Configuration.ConfigurationManager.AppSettings["APIBase"];
+    var UI_URL = System.Configuration.ConfigurationManager.AppSettings["UIBase"];
+}
+
+
+<!--meta tags-->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<title>Sub Category</title>
+<!-- favicon -->
+<!--<link rel="shortcut icon" href="../../App_Themes/Default/images/favicon.ico" type="image/x-icon">-->
+
+@*<script src="~/Scripts/Dashboard-script/category.js"></script>*@
+<!-- scripts -->
+<script src="~/Scripts/Dashboard-script/subcategory_validation.js"></script>
+<script src="~/JavaScript/SubCategory/SubCategory.js"></script>
+<link href="~/App_Themes/Default/css/popup.css" rel="stylesheet" />
+<script src="~/Scripts/pop_up_message.js"></script>
+<script src="../../Scripts/Kendo/jquery.min.js"></script>
+<script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+<script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+@*<link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />*@
+@*<link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />*@
+@*<link href="~/App_Themes/Default/css/fonts.css" rel="stylesheet" />*@
+@*<link href="~/App_Themes/Default/css/styleguide.css" rel="stylesheet" />*@
+@*<link href="~/App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />*@
+@*<link href="~/App_Themes/Default/css/kendo.Deeppurple.css" rel="stylesheet" />*@
+<!-- css -->
+<link href="../../App_Themes/Default/css/core-pocket.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/core-pocket-responsive.css" rel="stylesheet" />
+
+
+
+<div class="mt-container mt-container-fluid h100 pl-20 pr-20">
+    <section id="main_splitter" class="k-spliter h100">
+        <div class="center-pane h100 event-pane-wrapper">
+            <header class="grid-header">
+                <h5 class="title text-primary display-block">Sub Category</h5>
+                <div class="searchbar d-flex align-items-center mb-0">
+                    <div class="input-search">
+                        <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                           data-role="aratooltipv2"></i>
+                        <input type="search" id="search" name="search" class="form-control k-textbox" placeholder="Search here..."
+                               aria-label="Search" autocomplete="off">
+                    </div>
+
+                    <div class="action-div dropdown">
+                        <a class="btn btn-raised btn-primary btn-block action-btn" style="padding-top:10px">
+                            <i class="icon-action"></i><span>Action</span></span>
+                        </a>
+                        <ul class="dropdown-menu right">
+                            <li>
+                                <a href="javascript:void(0)" id="addEventLink" onclick="openAddEventPopup();">
+                                    <i class="icon-plus"></i><span>
+                                        Add SubCategory
+
+                                    </span>
+                                </a>
+                            </li>
+
+                            <li class="divider"></li>
+                            <li>
+                                <a>
+                                    <i class="icon-delete text-danger"></i><span class="text-danger" onclick="DeleteMultipleRow()">Delete SubCategory</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <div class="view-wrapper">
+                <div class="grid-wrapper h100" id="list_view_content">
+                    <div id="categoryGrid" class="mb-0"></div>
+                    <div id="categoryGrid_pager" class="with-more-option">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="addcategory" style="display: none;">
+    <div class="window-wrapper">
+        <div class="form-group">
+            <label for="tblName">
+                Category Name
+                <span class="text-danger" aria-hidden="true">*</span>
+            </label>
+            <input type="hidden" id="cid" />
+            <input type="hidden" id="subid" />
+            <input id="catname" width="50%">
+            <span id="SubCategoryMsgForSelect"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="tblName">
+                SubCateroy Name
+                <span class="text-danger" aria-hidden="true">*</span>
+            </label>
+            <input type="hidden" id="cid" />
+            <input type="hidden" id="subid" />
+            <input type="text" class="form-control" id="subname" oninput="SubCategoryName()" onchange="return SubCategoryName()">
+            <span id="SubCategoryMsgForName"></span>
+        </div>
+
+    </div>
+
+    <div id="deletePopup" style="display:none">
+        <p class="fs-20 font-medium text-center text-dark pb-20 mb-10 pt-20">Are you sure you want to delete this?</p>
+        <div class="text-center">
+            <button type="button" id="btnYesResponse" class="btn btn-raised k-button btn-danger" tabindex="0">Yes</button>
+            <button type="button" id="btnNoResponse" class="btn btn-raised k-button btn-trans" tabindex="0">No</button>
+        </div>
+    </div>
+
+
+    <div class="window-footer dir-rtl">
+        <button class="btn btn-primary" onclick="subCatValidate()" id="AddSubCat">Save</button>
+        <button class="btn btn-trans" id="resetsubcat">Reset</button>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $.ajax({
+            url: "@(API_URL)api/APIcategorydrodown/",
+            method: "GET",
+            success: function (data) {
+                $("#catname").kendoDropDownList({
+                    dataSource: data,
+                    dataTextField: "Name",
+                    dataValueField: "c_Id",
+                    optionLabel: "Select Category Name",
+                    //change: widgetChange,
+                    select: onchange
+
+                }).data('kendoDropDownList');
+            }
+
+        });
+
+        $("#Dashboard").removeClass("active");
+        $("#Category").removeClass("active");
+        $("#Vendors").removeClass("active");
+        $("#SubCategory").addClass("active");
+        // hide userprofile
+        $(document).click(function () {
+            //window.top.$('body').find('.userprofile-menu').removeClass('open');
+            //window.top.$('body').find('.userprofile').removeClass('active open');
+        });
+
+        // common select dropdown
+        $("select:not([multiple])").kendoDropDownList();
+
+
+        displaySubCategory()
+
+        // console.log(coursedata);
+
+
+        $("#addcategory").kendoWindow({
+            animation: false,
+            width: '600px',
+            height: '250px',
+            visible: false,
+            draggable: false,
+            resizable: false,
+            title: "SubCategory",
+            actions: [
+                "Close"
+            ],
+            modal: true,
+
+        }).data("kendoWindow");
+
+        $(".datetimepicker").kendoDateTimePicker({
+            value: new Date()
+        });
+
+
+
+    });
+    function gridDataBound(e) {
+        var grid = e.sender;
+        if (grid.dataSource.total() == 0) {
+            var colCount = grid.columns.length;
+            $(e.sender.wrapper)
+                .find('tbody')
+
+            .append('<div style="width: 90vw;height: 50vh;display: flex;justify-content: center;"><div style="width: 400px; padding-top: 50px;"><img src="@(UI_URL)Image/datanotfound.png" style="height: 250px"></div></div>');
+
+        }
+    };
+
+    function displaySubCategory() {
+        $("#categoryGrid").kendoGrid({
+            dataSource: {
+                //type: "odata",
+                transport: {
+                    read: "@(API_URL)api/SubCategoryApi/"
+                },
+                pageSize: 8
+            },
+            dataBound:gridDataBound,
+            height: 500,
+            pageable: true,
+            sortable: true,
+            reorderable: true,
+            schema: {
+                model: {
+                    id: "c_sub_Id",
+                    fields: {
+                        c_sub_Id: { editable: false, nullable: true },
+
+                    }
+                }
+            },
+            columns: [{ selectable: true, width: "40px" },
+                        {
+
+                            template: "<div class='grid-action'><a onclick='editcourse($(this))' class='text-muted'><i class='icon-edit1'></i></a><a onclick='deletecourse($(this))' class='text-danger delete-btn'><i class='icon-delete'></i></a></div>",
+                            field: "Action",
+                            title: "Action",
+                            width: 80
+                        },
+                        {
+                            field: "CategoryName",
+                            title: "CategoryName",
+                        },
+                        {
+                            field: "Name",
+                            title: "SubCategory",
+                        },
+
+                        {
+                            field: "CreatedDate",
+                            title: "Created Date",
+                            template: '#= kendo.toString(kendo.parseDate(CreatedDate), "dd/MM/yyyy")#'
+
+                        },
+                        {
+                            field: "ActivatedDate",
+                            title: "Activated Date",
+                            template: '#= kendo.toString(kendo.parseDate(ActivatedDate), "dd/MM/yyyy")#'
+                        },
+
+            ]
+        });
+
+    }
+
+    function openAddEventPopup() {
+        $("#subname").val('')
+        $("#subid").val('')
+        $("#cid").val('')
+        $("#catname").data('kendoDropDownList').value('');
+        $("#resetsubcat").trigger('click')
+        //$("#catname").kendoDropDownList().data('kendoDropDownList').val('')
+        //$("#CreatedDate").val('')
+        //$("#ActivatedDate").val('')
+
+        $("#addcategory").data("kendoWindow").center().open();
+    }
+
+    function onchange() {
+        var cat = this.value();
+        $("#cid").val(cat);
+    }
+
+    function editcourse(e) {
+        var grid = $("#categoryGrid").data("kendoGrid");
+        var row = e.select().closest("tr");
+        var dataitem = grid.dataItem(row);
+       // $("#cid").val(dataitem.c_Id)
+        openAddEventPopup();
+
+        $("#subid").val(dataitem.c_sub_Id)
+        $("#subname").val(dataitem.Name)
+        $("#catname").data('kendoDropDownList').value(dataitem.c_Id);
+
+    }
+
+    function DeleteMultipleRow() {
+        var grid = $('#categoryGrid').data('kendoGrid');
+        var rows = grid.select();
+        var ids = [];
+        var i = 0;
+        rows.each(function (e) {
+            console.log(grid.dataItem(this).c_sub_Id)
+            ids[i] = grid.dataItem(this).c_sub_Id;
+            i++;
+        });
+        if (i == 0) {
+            alert_popup("select atleast one items")
+            setTimeout(function () {
+                document.getElementById("alert-box").style.display = "none";
+            }, 3000);
+        }
+        else {
+            $("#deletePopup").data("kendoWindow").center().open();
+            $("#btnYesResponse").click(function () {
+
+                deletecourse(ids);
+
+            });
+            $("#btnNoResponse").click(function () {
+
+                $("#deletePopup").data("kendoWindow").close();
+                window.location.reload();
+
+            });
+
+        }
+        console.log(ids);
+    }
+
+
+
+    $('#deletePopup').kendoWindow({
+
+        visible: false,
+        draggable: false,
+        resizable: false,
+        defaultFocus: false,
+        modal: true,
+    }).data("kendoWindow");
+
+    $('#deletePopup').parent().addClass('deletepoupwrapper');
+    $('#deletePopup').parent().addClass('k-window-titleless');
+
+    function deletecourse(e) {
+
+        //for multiple delete
+
+        if (Array.isArray(e)) {
+            var status = false;
+            for (var i = 0; i < e.length; i++) {
+                $.ajax({
+                    url: "@(API_URL)api/SubCategoryApi?c_sub_id=" + e[i],
+                    method: "Delete",
+                    success: function (response) {
+                        if (response) {
+                            logger("SubCategory", "Delete")
+                            $("#deletePopup").data("kendoWindow").close()
+                            displaySubCategory()
+                            dltsubcategory()
+                            setTimeout(function () {
+                                document.getElementById("success-dlt-subcat").style.display = "none";
+                            }, 2000);
+
+                        }
+                        else {
+                            $("#deletePopup").data("kendoWindow").close()
+                            alert_popup("Can't Delete")
+                            setTimeout(function () {
+                                document.getElementById("alert-box").style.display = "none";
+                            }, 2000);
+
+                        }
+
+                    },
+                    error: function (error) {
+                        console.log("error :" + error);
+                    }
+                });
+
+            }
+        }
+            //for single delete
+        else {
+            var grid = $("#categoryGrid").data("kendoGrid");
+            var row = e.select().closest("tr");
+            var dataitem = grid.dataItem(row);
+
+            $("#deletePopup").data("kendoWindow").center().open();
+            $("#btnYesResponse").click(function () {
+
+                $.ajax({
+                    url: "@(API_URL)api/SubCategoryApi?c_sub_id=" + dataitem.c_sub_Id,
+                    method: "Delete",
+                    success: function (response) {
+                        if (response) {
+                            logger("SubCategory", "Delete")
+                            $("#deletePopup").data("kendoWindow").close()
+                            displaySubCategory()
+                            dltsubcategory()
+                            setTimeout(function () {
+                                document.getElementById("success-dlt-subcat").style.display = "none";
+                            }, 2000);
+                        }
+                        else {
+                            $("#deletePopup").data("kendoWindow").close()
+                            alert_popup("Can't Delete")
+                            setTimeout(function () {
+                                document.getElementById("alert-box").style.display = "none";
+                            }, 2000);
+
+                        }
+                    },
+                    error: function (error) {
+                        console.log("error :" + error);
+                    }
+                });
+
+
+            });
+            $("#btnNoResponse").click(function () {
+
+                $("#deletePopup").data("kendoWindow").close();
+                window.location.reload();
+                //Drop down
+            });
+
+            //cshtml
+
+        }
+    }
+
+    $('#search').on('input', function () {
+        var q = $("#search").val();
+        var p = $("#search").val();
+
+
+        var grid = $("#categoryGrid").data("kendoGrid");
+        grid.dataSource.query({
+            page: 1,
+            pageSize: 8,
+            filter: {
+                logic: "or",
+                filters: [
+                { field: "Name", operator: "contains", value: q },
+                { field: "CategoryName", operator: "contains", value: p },
+                { field: "ActivatedDate", operator: "contains", value: p },
+                { field: "CreatedDate", operator: "contains", value: p },
+                { field: "C_status", operator: "contains", value: p },
+                ]
+            }
+        });
+    });
+
+
+</script>
+
+<!--Insert Popop-->
+<div class="notification-box success" id="success-box-subcat">
+    <div class="notification-alert success">
+        <div class="pull-left"><i class="icon-check" aria-hidden="false"></i></div>
+        <div class="pull-right" role="alert" aria-label="Success">
+            <h5>
+                Success!
+            </h5>
+            <p id="success-msg">Insert Successfully.</p>
+        </div>
+        <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-success-subcat"><i class="icon-cancel" aria-hidden="true"></i></a>
+    </div>
+</div>
+
+<!--update Popop-->
+<div class="notification-box success" id="success-box-subcat-update">
+    <div class="notification-alert success">
+        <div class="pull-left"><i class="icon-check" aria-hidden="false"></i></div>
+        <div class="pull-right" role="alert" aria-label="Success">
+            <h5>
+                Success!
+            </h5>
+            <p id="success-msg">Update Successfully.</p>
+        </div>
+        <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-success-subcat-update"><i class="icon-cancel" aria-hidden="true"></i></a>
+    </div>
+</div>
+
+
+<!--Delete Popop success-->
+<div class="notification-box success" id="success-dlt-subcat">
+    <div class="notification-alert success">
+        <div class="pull-left"><i class="icon-check" aria-hidden="false"></i></div>
+        <div class="pull-right" role="alert" aria-label="Success">
+            <h5>
+                Success!
+            </h5>
+            <p id="success-msg">SubCategory Delete Successfully.</p>
+        </div>
+        <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-success-dlt-subcat"><i class="icon-cancel" aria-hidden="true"></i></a>
+    </div>
+</div>
+
+<div class="notification-box warning" id="alert-box">
+    <div class="notification-alert warning">
+        <div class="pull-left"><i class="icon-warning" aria-hidden="true"></i></div>
+        <div class="pull-right" role="alert" aria-label="warning">
+            <h5>Warning!</h5>
+            <p id="alert-msg"></p>
+        </div>
+        <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-alert"><i class="icon-cancel" aria-hidden="true"></i></a>
+    </div>
+</div>
+

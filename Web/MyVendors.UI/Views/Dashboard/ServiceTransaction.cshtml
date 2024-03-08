@@ -1,0 +1,829 @@
+﻿
+@{
+    ViewBag.Title = "ServiceTransaction";
+    Layout = "~/Views/Shared/_MyVendorLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--meta tags-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <title>Transaction</title>
+    <!-- favicon -->
+    <!--<link rel="shortcut icon" href="../../App_Themes/Default/images/favicon.ico" typea="image/x-icon">-->
+    <link href="~/App_Themes/Default/css/popup.css" rel="stylesheet" />
+    <script src="~/Scripts/pop_up_message.js"></script>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+    @*<link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />*@
+    @*<link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/fonts.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/styleguide.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/kendo.Deeppurple.css" rel="stylesheet" />*@
+
+    <!-- css -->
+    <link href="../../App_Themes/Default/css/core-pocket.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/core-pocket-responsive.css" rel="stylesheet" />
+    <script>
+        var API_URL = "@System.Configuration.ConfigurationManager.AppSettings["APIBase"]";
+        var UI_URL = "@System.Configuration.ConfigurationManager.AppSettings["UIBase"]";
+    </script>
+
+</head>
+
+<body>
+    <div class="mt-container mt-container-fluid h100 pl-20 pr-20">
+        <section id="main_splitter" class="k-spliter h100">
+            <div class="center-pane h100 event-pane-wrapper">
+                <header class="grid-header">
+                    <h5 class="title text-primary display-block">Transaction</h5>
+                    <div class="searchbar d-flex align-items-center mb-0">
+                        <div class="input-search">
+                            <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                               data-role="aratooltipv2"></i>
+                            <input type="text" name="search" class="form-control k-textbox" placeholder="Search here..." id="questionSearch"
+                                   aria-label="Search" autocomplete="off">
+                        </div>
+
+                        <div class="action-div dropdown">
+                            <a class="btn btn-raised btn-primary btn-block action-btn" style="padding-top:10px">
+                                <i class="icon-action"></i><span>Action</span></span>
+                            </a>
+                            <ul class="dropdown-menu right">
+                                <li>
+                                    <a href="javascript:void(0)" id="addEventLink" onclick="openServiceTransactionPopup();">
+                                        <i class="icon-plus"></i><span>
+                                            Service Transaction
+                                        </span>
+                                    </a>
+                                </li>
+
+                                <li class="divider"></li>
+                                <li>
+                                    <a>
+                                        <i class="icon-delete text-danger"></i><span class="text-danger">Delete</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </header>
+                @*<div class="action-header d-flex mb-10">
+                        <div class="action-checkbox ml-10">
+                            <input type="checkbox" class="k-checkbox" id="checkAll101">
+                            <label class="k-checkbox-label" for="checkAll101">All</label>
+                        </div>
+                    </div>*@
+                <div class="view-wrapper">
+                    <div class="grid-wrapper h100" id="list_view_content">
+                        <div id="categoryGrid" class=""></div>
+                        <div id="categoryGrid_pager" class="with-more-option">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    @*----------------------------------------------------------------service popup----------------------------------------------------*@*
+
+    <div id="servicepopup" style="display: none;">
+        <div class="wrapper">
+
+            <div class="form-group">
+                <table align="left">
+                    <tr>
+                        <td> <label for="addCat">Date :<span class="text-danger">*</span></label>&nbsp &nbsp</td>
+                        <td><input type="date" class="form-control" id="ServiceDate" oninput="servicedate()" onchange="servicedate()"></td>
+
+                    </tr>
+                </table><br /><br />
+                <span id="dateerrormassage"></span>
+            </div>
+
+        </div>
+        <input type="text" id="forServiceTMultiplyFn" value="" hidden />
+        <input type="text" id="forRepairTMultiplyFn" value="" hidden />
+
+
+        <div class="form-group">
+            <label for="order Status">
+                Vendor Name:<span class="text-danger">*</span>
+            </label>
+            <select id="ServiceSelectVendorlist" onchange="ServiceSelectVendor()"></select>
+            <span id="SelectVendorlisterror"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="addCat">Service Id<span class="text-danger">*</span></label>
+            <select id="SelectServiceId" oninput="" onchange="ServiceOrder()"></select>
+            <span id="errormassaggeserviceid"></span>
+        </div>
+        <div class="form-group">
+            <table class="table">
+                <thead style="background: rgb(126, 87, 194);color:white;">
+
+                    <tr>
+                        <th>Item</th>
+                        <th>Service</th>
+                        <th>Repair</th>
+                        <th>Notes</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                <tbody id="rowGen">
+                    @*<tr>
+                            <td>
+                                <input type="text" id="" class="k-textbox login-textbox" min="0" value="AC" style="width:80px;" disabled>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="" id="repair1" class="k-checkbox">
+                                <label class="k-checkbox-label" for="repair1">Service</label>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="" id="service1" class="k-checkbox">
+                                <label class="k-checkbox-label" for="service1">Repair</label><br />
+                            </td>
+
+
+                            <td><input type="text" /></td>
+
+
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" id="" class="k-textbox login-textbox" min="0" value="Computer" style="width:80px;" disabled>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="" id="repair1" class="k-checkbox">
+                                <label class="k-checkbox-label" for="repair1">Service</label>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="" id="service1" class="k-checkbox">
+                                <label class="k-checkbox-label" for="service1">Repair</label><br />
+
+                            </td>
+                            <td><input type="text" /></td>
+
+
+
+                        </tr>*@
+
+                </tbody>
+            </table>
+
+
+        </div>
+        <div class="form-group">
+            <table class="table">
+                <thead style="background: rgb(126, 87, 194);color:white;">
+
+                    <tr>
+                        <th>Repair Items</th>
+                        <th>Price</th>
+                        <th>Total</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                <tbody id="rowGenForService">
+                    @*<tr>
+                            <td>
+                                <input type="number" id="totalserviceitem" class="k-textbox login-textbox" min="0" value="0" style="width:80px;" onchange="TotalService();">
+                                <span id="tservicemassage"></span>
+                            </td>
+                            <td>
+                                <input type="number" id="totalserviceprice" class="k-textbox login-textbox" min="0" value="0" style="width:80px;" onchange="TotalServicePrice();">
+                                <span id="tservicemassage1"></span>
+
+                            </td>
+                            <td>
+                                <input type="number" id="total" class="k-textbox login-textbox" min="0" value="" style="width:80px" disabled />
+
+                            </td>
+
+
+
+                        </tr>*@
+            </table>
+        </div>
+        <div class="form-group">
+            <table class="table">
+                <thead style="background: rgb(126, 87, 194);color:white;">
+
+                    <tr>
+                        <th>Service Items </th>
+                        <th>Price</th>
+                        <th>Total</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                <tbody id="rowGenForRepair">
+                    @*<tr>
+                            <td>
+                                <label id="totalitemrepair"></label>
+                                <span id="tr"></span>
+                            </td>
+                            <td>
+                                <input type="number" id="rprice" class="k-textbox login-textbox" style="width:80px;" onchange="">
+                                <span id="rp"></span>
+                            </td>
+                            <td><input type="number" id="total1" class="k-textbox login-textbox" min="0" value="" style="width:80px" disabled />
+                        </tr>*@
+            </table>
+        </div>
+        <div class="form-group">
+            <label for="order Status">
+                Delevery Status:
+            </label>
+            <select name="status" id="ServiceOrderStatus">
+                <option>--Select Status--</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Not Delivered">Not Delivered</option>
+            </select>
+        </div>
+        <div class="window-footer">
+            <button class="btn btn-primary" id="insertServiceData" onclick="Servicebtn()">Save</button>
+
+        </div>
+    </div>
+    @*---------------------------------------------------------End service Popup-------------------------------------------------------------*@
+    <!-- Edit transaction window -->
+    <!--view Order Detail Popup-->
+    <div id="viewServicedetail" style="display: none;">
+        <div class="wrapper">
+            <div class="form-group">
+                <table class="table" align="center">
+                    <tr>
+                        <td><label for="vendorname">Vendor Name :</label></td>
+                        <td><input type="text" style="border:none" id="vendorname" readonly /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="orderstatus">Service And Repair Items :</label></td>
+                        <td>
+                            <table id="detailsTable" cellspacing="5" cellpadding="5"></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="tprice">Total Price :</label></td>
+                        <td><input type="text" style="border:none" id="tprice" readonly /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- delete section confirmation Window -->
+
+    <div id="confirmDelete" style="display: none;">
+        <div class="window-wrapper">
+
+            <div class="form-group">
+                <label id="qDelPopup"></label>
+            </div>
+
+            <div class="window-footer dir-rtl">
+                <button class="btn btn-danger" id="delOkBtn">Ok</button>
+                <button class="btn btn-trans " onclick="closeDelEventPopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!-- option menu -->
+    <ul id="popup" class="grid-options" style="display: none;">
+        <li class="goto">
+            <span class="text-muted">Go to page</span>
+            <span>
+                <input type="text" id="page_goto" class="form-control" />
+            </span>
+            <span class="text-muted">0</span>
+            <span class="text-muted">pages</span>
+        </li>
+        <li class="rpp">
+            <span class="text-muted">Record per page</span>
+            <select class="k-dropdown" id="pagerDropdown">
+                <option>5</option>
+                <option>10</option>
+                <option>15</option>
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+                <option>200</option>
+            </select>
+        </li>
+    </ul>
+    <!-- option menu -->
+    <!-- scripts -->
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+    <script src="~/Scripts/Dashboard-script/Transaction.js"></script>
+    <script>
+                    //$("#addRadioGroup input[name='radioinline']:checked").
+                    $(document).ready(function () {
+                        // hide userprofile
+                        $(document).click(function () {
+                            //window.top.$('body').find('.userprofile-menu').removeClass('open');
+                            //window.top.$('body').find('.userprofile').removeClass('active open');
+                        });
+                        console.log("yas");
+                        console.log($("#addRadioGroup input[name='radioinline']:checked").val());
+                        // common select dropdown
+                        $("select:not([multiple])").kendoDropDownList();
+
+                        //confirm delete section
+                        $("#confirmDelete").kendoWindow({
+                            animation: false,
+                            width: '400px',
+                            height: 'auto',
+                            visible: false,
+                            draggable: false,
+                            resizable: false,
+                            title: "Delete Section",
+                            actions: [
+                                "Close"
+                            ],
+                            modal: true,
+
+                        }).data("kendoWindow");
+                        //orderpopup
+                        $("#servicepopup").kendoWindow({
+                            animation: false,
+                            width: '600px',
+                            height: '500px',
+                            visible: false,
+                            draggable: false,
+                            resizable: false,
+                            title: "Service",
+                            actions: [
+                                "Close"
+                            ],
+                            modal: true,
+
+                        }).data("kendoWindow");
+
+                        $("#editTransaction").kendoWindow({
+                            animation: false,
+                            width: '600px',
+                            height: '500px',
+                            visible: false,
+                            draggable: false,
+                            resizable: false,
+                            title: "Update Transaction",
+                            actions: [
+                                "Close"
+                            ],
+                            modal: true,
+
+                        }).data("kendoWindow");
+
+                        $("#viewServicedetail").kendoWindow({
+                            animation: false,
+                            width: '500px',
+                            visible: false,
+                            draggable: false,
+                            resizable: false,
+                            title: "Transaction Details",
+                            actions: [
+                                "Close"
+                            ],
+                            modal: true,
+
+                        }).data("kendoWindow");
+                        $(".datetimepicker").kendoDateTimePicker({
+                            value: new Date()
+                        });
+
+                    });
+
+                    function openServiceTransactionPopup() {
+                        $("#ServiceDate").val('')
+                        $("#ServiceSelectVendorlist").data('kendoDropDownList').value('');
+                        $("#SelectServiceId").data('kendoDropDownList').value('');
+                        $("#rowGen").empty();
+                        $("#rowGenForRepair").empty();
+                        $("#servicepopup").data("kendoWindow").center().open();
+                    }
+                    function closeServiceTransactionPopup() {
+                        $("#servicepopup").data("kendoWindow").close();
+                    }
+                    function openEditTransaction() {
+                        $("#editTransaction").data("kendoWindow").center().open();
+                    }
+                    function openDelEventPopup() {
+                        $("#confirmDelete").data("kendoWindow").center().open();
+                    }
+                    function closeDelEventPopup() {
+                        $("#confirmDelete").data("kendoWindow").close();
+                    }
+                    function openUpdateTransactionPopup() {
+                        $("#editTransaction").data("kendoWindow").center().open();
+                    }
+                    function openViewServiceTransaction() {
+                        $("#viewServicedetail").data("kendoWindow").center().open();
+                    }
+    </script>
+    <script>
+                    //dispaly grid
+                    $(document).ready(function () {
+
+                        $("select:not([multiple])").kendoDropDownList();
+
+                    var gridData = new kendo.data.DataSource({
+                        transport: {
+                            read: {
+                                url: API_URL + "api/TransactionServiceApi",
+                                dataType: "json"
+                            },
+                        },
+                        pageSize:10,
+                    });
+                    console.log("grid start");
+                    console.log(gridData);
+
+
+
+
+                    $("#categoryGrid_pager").kendoPager({
+                        dataSource: gridData,
+                    });
+                    gridData.read();
+
+                    $('#questionSearch').on('input', function () {
+                        var s = $("#questionSearch").val();
+                        var grid = $("#categoryGrid").data("kendoGrid");
+                        grid.dataSource.query({
+                            page: 1,
+                            pageSize: 10,
+                            filter: {
+                                logic: "or",
+                                filters: [
+                                    { field: "vname", operator: "contains", value: s },
+                                    { field: "orderId", operator: "contains", value: s },
+                                    { field: "transactionData", operator: "contains", value: s },
+                                    { field: "delivaryStatus", operator: "contains", value: s },
+                                    { field: "TotalPrice", operator: "contains", value: s },
+                                ]
+                            }
+                        });
+                    });
+
+//-----------------------------------------------------------------------------------------------------------------
+                    console.log("grid data");
+                    console.log(gridData);
+                    $("#categoryGrid").kendoGrid({
+                        dataSource: gridData,
+                        totalRecordPerPage: 4,
+                        resizable: true,
+                        sortable: true,
+                        pageable: false,
+                        pageSize: 2,
+                        persistSelection: true,
+                        columns: [{ selectable: true, width: "40px" },
+                        {
+                            template: "<div class='grid-action'><a class='text-primary' onclick='ShowDetails($(this))'><i class='icon-show' id='showTransactionService'></i></a><a class='text-primary' onclick='SendMail($(this))'><i class='icon-email' id=''></i></a></div>",
+                            field: "Action",
+                            title: "Action",
+                            width: 80
+                        },
+                        {
+                            field: "vname",
+                            title: "Vendor Name",
+                        },
+                        {
+                            field: "transactionDate",
+                            title: "Transaction Date",
+                            template: '#= kendo.toString(kendo.parseDate(transactionDate), "dd/MM/yyyy")#',
+                        },
+                        {
+                            field: "TotalPrice",
+                            title: "Total Amount",
+                            attributes: { 'class': 'k-text-right' }
+                        },
+                        {
+                            field: "deliveryStatus",
+                            title: "Delivary Status",
+                        },]
+                    });
+
+                    var popup = $("#popup").kendoPopup({
+                        animation: false,
+                        anchor: $("#moreOption"),
+                        origin: "top right",
+                        position: "bottom right",
+                        collision: "fit",
+
+                    }).data("kendoPopup");
+
+                    $("#moreOption").click(function () {
+                        $("#popup").data("kendoPopup").open()
+                    });
+
+                    $("#pagerDropdown").kendoDropDownList({
+                        popup: {
+                            appendTo: 'body'
+                        }
+                    });
+                    });
+        //send email----------------------
+                    function SendMail(e)
+                    {
+                        var grid = $("#categoryGrid").data("kendoGrid");
+                        var row = e.select().closest("tr");
+                        var dataitem = grid.dataItem(row);
+                        debugger;
+                        var addData = {
+                            TransactionId: dataitem.TransactionId,
+                        }
+                        $.ajax({
+                            url: API_URL + "api/TransactionServiceInvoiceAPI/",
+                            type: "POST",
+                            data: addData,
+                            success: function (data) {
+                                if (data)
+                                {
+                                    console.log('Invoice Sent!!')
+                                }
+                                else
+                                {
+                                    console.log('Invoice not Sent!!')
+                                }
+                            },
+                            error: function (e) {
+                            }
+                        });
+                    }
+
+        //view details service transaction--------------------------------------------------------------------------
+                    function ShowDetails(e) {
+                        var grid = $("#categoryGrid").data("kendoGrid");
+                        var row = e.select().closest("tr");
+                        var dataitem = grid.dataItem(row);
+                        $("#vendorname").val(dataitem.vname);
+                        $("#tprice").val(dataitem.TotalPrice);
+                        openViewServiceTransaction();
+                        $(document).ready(function () {
+                            //$("#SelectServiceId").change(function (e) {
+                            //e.preventDefault();
+                                //$('#addQueForm')[0].reset();
+                                var addData = {
+                                    ServiceId: dataitem.serviceId,
+                                }
+                                var BindViewService = '';
+                                $.ajax({
+                                    url: API_URL + "api/TransactionServiceApi",
+                                    type: "POST",
+                                    data: addData,
+                                    success: function (response) {
+
+                                        console.log(response);
+                                        $("#detailsTable").empty();
+                                        var BindViewService ='<tr><th>Item</th><th>Service</th><th>Repair</th><th>Notes</th></tr>';
+                                        for (var i = 0; i < response.length; i++) {
+                                            BindViewService += '<tr><td><span>' + response[i].SubCatName + '</span></td>' +
+                                               '<td><input type="checkbox" class="k-checkbox" name="" id="svrepair' + i + '" disabled>' +
+                                                '<label class="k-checkbox-label" for="svrepair' +i + '"></label></td>' +
+                                                '<td><input type="checkbox" class="k-checkbox" id="svservice' + i + '" disabled>' +
+                                                '<label class="k-checkbox-label" for="svservice' + i + '"></label></td></tr>';
+                                        }
+                                        $('#detailsTable').append(BindViewService);
+                                        $("#totalItemCount").val(response.length);
+                                        //$("#forMultiplyFn").val(response.length);
+                                        for (var j = 0; j < response.length; j++) {
+                                            if (response[j].Repair == true) {
+                                                document.getElementById("svrepair" + j + "").checked = true;
+                                            }
+
+                                            if (response[j].Service == true) {
+                                                document.getElementById("svservice" +j + "").checked = true;
+                                            }
+                                            if (response[j].Service == false) {
+                                                document.getElementById("svservice" + j + "").checked = false;
+
+                                            }
+                                            if (response[j].Repair == false) {
+                                                document.getElementById("svrepair" + j+ "").checked = false;
+
+                                            }
+                                        }
+                                    },
+                                    error: function (error) {
+                                        console.log("error :" + error);
+                                    }
+                                });
+                        });
+
+
+
+                    }
+
+    </script>
+
+    <!--Get Dropdown data-->
+    <script>
+                var date = new Date();
+                var tdate = date.getDate();
+                var month = date.getMonth() + 1;
+                if (tdate < 10) {
+                    tdate = '0' + tdate;
+                }
+                if (month < 10) {
+                    month = '0' + month;
+                }
+                var year = date.getUTCFullYear();
+                var minDate = year + "-" + month + "-" + tdate;
+                document.getElementById("ServiceDate").setAttribute('min', minDate)
+    </script>
+    <script>
+                    //add transation
+                    $(document).ready(function () {
+                            //$('#addQueForm')[0].reset();
+                            var addData = {
+                                transactionType: 'Service',
+                            }
+                            $.ajax({
+                                url: API_URL + "api/VendorNameApi",
+                                type: "POST",
+                                data: addData,
+                                success: function (response) {
+                                    var orderData = response;
+                                    $("#ServiceSelectVendorlist").kendoDropDownList({
+                                        placeholder: "--Select Vendor--",
+                                        optionLabel: "--Select Vendor--",
+                                        dataSource: orderData,
+                                    })
+                                },
+                                error: function (error) {
+                                }
+                            });
+
+                        });
+    </script>
+    <script>
+                    //get id from vendor name selection
+                    $(document).ready(function () {
+                        $("#ServiceSelectVendorlist").change(function (e) {
+                            e.preventDefault();
+                            //$('#addQueForm')[0].reset();
+                            var addData = {
+                                vname: $("#ServiceSelectVendorlist").val(),
+                                transactionType: 'Service',
+                            }
+                            $.ajax({
+                                url: API_URL + "api/GetOrderIdApi",
+                                type: "POST",
+                                data: addData,
+                                success: function (response) {
+                                    $("#SelectServiceId").kendoDropDownList({
+                                        placeholder: "--Select Service Id--",
+                                        optionLabel: "--Select Service Id--",
+                                        dataSource: response,
+                                    })
+                                },
+                                error: function (error) {
+                                    console.log("error :" + error);
+                                }
+                            });
+                        });
+                    });
+    </script>
+    <script>
+        //get items(subcategory name) from order
+        $(document).ready(function () {
+            $("#SelectServiceId").change(function (e) {
+                e.preventDefault();
+                //$('#addQueForm')[0].reset();
+                var addData = {
+                    ServiceId: $("#SelectServiceId").val(),
+                }
+                var BindViewService = '';
+                
+                $.ajax({
+                    url: API_URL + "api/ServiceGetApiForTable/"+$("#SelectServiceId").val(),
+                    type: "Get",
+                    data: addData,
+                    success: function (response) {
+                        $("#rowGen").empty();
+                        for (var i = 0; i < response.length; i++) {
+                            BindViewService += '<tr><td><span>' + response[i].SubCatName + '</span></td>' +
+                               '<td><input type="checkbox" class="k-checkbox" name="" id="srepair' + i + '" disabled>' +
+                                '<label class="k-checkbox-label" for="srepair' +i + '"></label></td>' +
+                                '<td><input type="checkbox" class="k-checkbox" id="sservice' + i + '" disabled>' +
+                                '<label class="k-checkbox-label" for="sservice' + i + '"></label></td>' +
+                            '</tr>';
+                        }
+                        $('#rowGen').append(BindViewService);
+                        $("#totalItemCount").val(response.length);
+                        //$("#forMultiplyFn").val(response.length);
+                        for (var j = 0; j < response.length; j++) {
+                            //console.log(response[j].ServiceId);
+                            if (response[j].Repair == true) {
+                                document.getElementById("srepair" + j + "").checked = true;
+                            }
+
+                            if (response[j].Service == true) {
+                                document.getElementById("sservice" +j + "").checked = true;
+                            }
+                            if (response[j].Service == false) {
+                                document.getElementById("sservice" + j + "").checked = false;
+
+                            }
+                            if (response[j].Repair == false) {
+                                document.getElementById("srepair" + j+ "").checked = false;
+
+                            }
+                        }
+                        $("#rowGenForService").empty();
+                        var BindServiceItems = '';
+                        var countSRowForMul = 0;
+                        var idSValue = 1;
+                        for (var i = 0; i < response.length; i++) {
+                            if (response[i].Service) {
+                                BindServiceItems += '<tr><td><span id="serviceitem' + idSValue + '">' + response[i].SubCatName + '</span></td>' +
+                              '<td><input type="number" id="Sprice' + idSValue + '" class="k-textbox" onchange="multiplyServicePrice()"><span id="rp"></span></td>' +
+                              '<td><input type="number" id="Stotal1' + idSValue + '" class="k-textbox" value="" disabled /></tr>';
+                                countSRowForMul++;
+                                idSValue++;
+                            }
+
+                        }
+                        BindServiceItems += '<tr><td></td><td></td><td class="d-flex justify-content-flex-end align-items-baseline"><label for="totalServicePrice">Total Price:</label><input type="number" id="totalServicePrice" class="k-textbox" value="" style="width:120px" disabled /></td></tr>'
+                        $('#rowGenForService').append(BindServiceItems);
+                        $("#forServiceTMultiplyFn").val(countSRowForMul);
+
+                        $("#rowGenForRepair").empty();
+                        var BindRepairItems = '';
+                        var countRRowForMul = 0;
+                        var idRValue = 1;
+                        for (var i = 0; i < response.length; i++) {
+                            if (response[i].Repair) {
+                                BindRepairItems += '<tr><td><span id="repairitem' + idRValue + '">' + response[i].SubCatName + '</span></td>' +
+                              '<td><input type="number" id="Rprice' + idRValue + '" class="k-textbox" onchange="multiplyOrderPrice()"><span id="rp"></span></td>' +
+                              '<td><input type="number" id="Rtotal1' + idRValue + '" class="k-textbox" value="" disabled /></tr>';
+                                countRRowForMul++;
+                                idRValue++;
+                            }
+
+                        }
+                        BindRepairItems += '<tr><td></td><td></td><td class="d-flex justify-content-flex-end align-items-baseline"><label for="totalRepairPrice">Total Price : </label><input type="number" id="totalRepairPrice" class="k-textbox" value="" style="width:120px" disabled /><td></tr>'
+                        $('#rowGenForRepair').append(BindRepairItems);
+                        $("#forRepairTMultiplyFn").val(countRRowForMul);
+
+                    },
+                    error: function (error) {
+                        console.log("error :" + error);
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+                    //insert data into database
+                    $(document).ready(function () {
+                        $("#insertServiceData").click(function (e) {
+                            e.preventDefault();
+
+                            if (true) {
+                                var tprice = Number(document.getElementById('totalRepairPrice').value) + Number(document.getElementById('totalServicePrice').value);
+                                var addData = {
+                                    ServiceId: $("#SelectServiceId").val(),
+                                    vname: $("#ServiceSelectVendorlist").val(),
+                                    deliveryStatus: $("#ServiceOrderStatus").val(),
+                                    TotalPrice: tprice,
+                                    transactionDate: $("#ServiceDate").val(),
+                                    transactionType:'Service',
+                                }
+
+                                $.ajax({
+                                    url: API_URL + "api/TransactionServiceApi",
+                                    method: "POST",
+                                    data: addData,
+                                    success: function (data) {
+                                        if(data==1){
+                                            console.log("success insert");
+                                            location.reload(true);
+                                        }
+
+                                    },
+                                    error: function (error) {
+                                        console.log("error :" + error);
+                                    }
+                                });
+
+                            }
+
+                        });
+                    });
+    </script>
+
+</body>
+
+</html>
+

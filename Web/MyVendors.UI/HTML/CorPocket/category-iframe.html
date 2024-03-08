@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--meta tags-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <title>Clarent Institute CorePocket</title>
+    <!-- favicon -->
+    <!--<link rel="shortcut icon" href="../../App_Themes/Default/images/favicon.ico" type="image/x-icon">-->
+
+    <link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/fonts.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/styleguide.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/kendo.Deeppurple.css" rel="stylesheet" />
+
+    <!-- css -->
+    <link href="../../App_Themes/Default/css/core-pocket.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/core-pocket-responsive.css" rel="stylesheet" />
+
+</head>
+
+<body>
+    <div class="mt-container mt-container-fluid h100 pl-20 pr-20">
+        <section id="main_splitter" class="k-spliter h100">
+            <div class="center-pane h100 event-pane-wrapper">
+                <header class="grid-header">
+                    <h5 class="title text-primary display-block">Category</h5>
+                    <div class="searchbar d-flex align-items-center mb-0">
+                        <div class="input-search">
+                            <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                                data-role="aratooltipv2"></i>
+                            <input type="text" name="search" class="form-control k-textbox" placeholder="Search here..."
+                                aria-label="Search" autocomplete="off">
+                        </div>
+
+                        <div class="action-div dropdown">
+                            <a class="btn btn-raised btn-primary btn-block action-btn"><i
+                                    class="icon-action"></i><span>Action</span><span class="caret"></span></a>
+                            <ul class="dropdown-menu right">
+                                <li><a href="javascript:void(0)" id="addEventLink" onclick="openAddEventPopup();"><i
+                                            class="icon-plus"></i><span>Add
+                                            Express</span></a></li>
+
+                                <li class="divider"></li>
+                                <li><a><i class="icon-delete text-danger"></i><span
+                                            class="text-danger">Delete</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </header>
+                <div class="action-header d-flex mb-10">
+                    <div class="action-checkbox ml-10">
+                        <input type="checkbox" class="k-checkbox" id="checkAll101">
+                        <label class="k-checkbox-label" for="checkAll101">All</label>
+                    </div>
+                </div>
+                <div class="view-wrapper">
+                    <div class="grid-wrapper h100" id="list_view_content">
+                        <div id="categoryGrid" class="mb-0"></div>
+                        <div id="categoryGrid_pager" class="with-more-option">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- add category window -->
+    <div id="addcategory" style="display: none;">
+        <div class="window-wrapper">
+            <div class="form-group">
+                <label for="addCat">Add Category</label>
+                <input type="text" class="form-control" id="addCat">
+            </div>
+            <div class="form-group">
+                <ul class="radiolist">
+                    <li>
+                        <input type="radio" name="type" id="Expense" class="k-radio" checked="checked">
+                        <label class="k-radio-label" for="Expense">Expense</label>
+                    </li>
+                    <li>
+                        <input type="radio" name="type" id="Income" class="k-radio">
+                        <label class="k-radio-label" for="Income">Income</label>
+                    </li>
+                </ul>
+            </div>
+            <div class="form-group">
+                <label for="textArea">Description</label>
+                <textarea id="textArea" class="form-control k-textbox" rows="5"
+                    aria-label="textarea">Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print,</textarea>
+            </div>
+        </div>
+        <div class="window-footer dir-rtl">
+            <button class="btn btn-primary">Add</button>
+            <button class="btn btn-trans">Close</button>
+        </div>
+    </div>
+    <!-- add category window -->
+    <!-- option menu -->
+    <ul id="popup" class="grid-options" style="display: none;">
+        <li class="goto">
+            <span class="text-muted">Go to page</span>
+            <span>
+                <input type="text" id="page_goto" class="form-control" />
+            </span>
+            <span class="text-muted">0</span>
+            <span class="text-muted">pages</span>
+        </li>
+        <li class="rpp">
+            <span class="text-muted">Record per page</span>
+            <select class="k-dropdown" id="pagerDropdown">
+                <option>5</option>
+                <option>10</option>
+                <option>15</option>
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+                <option>200</option>
+            </select>
+        </li>
+    </ul>
+    <!-- option menu -->
+
+
+
+    <!-- scripts -->
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+    <script>
+        $(document).ready(function () {
+            // hide userprofile 
+            $(document).click(function () {
+                window.top.$('body').find('.userprofile-menu').removeClass('open');
+                window.top.$('body').find('.userprofile').removeClass('active open');
+            });
+
+            // common select dropdown
+            $("select:not([multiple])").kendoDropDownList();
+
+
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "https://demos.telerik.com/kendo-ui/service/Products",
+                        dataType: "jsonp"
+                    }
+                },
+            });
+
+
+            $("#categoryGrid").kendoGrid({
+                dataSource: {
+                    type: "odata",
+                    transport: {
+                        read: "https://demos.telerik.com/kendo-ui/service/Northwind.svc/Customers"
+                    },
+                    pageSize: 4
+                },
+                resizable: true,
+                sortable: true,
+                pageable: false,
+                persistSelection: true,
+                columns: [{ selectable: true, width: "40px" },
+                {
+                    template: "<div class='grid-action'><a class='text-muted'><i class='icon-edit1'></i></a><a class='text-danger delete-btn'><i class='icon-delete'></i></a></div>",
+                    field: "Action",
+                    title: "Action",
+                    width: 80
+                }, {
+                    template: 'Car',
+                    field: "Category",
+                    title: "Category",
+                }, {
+                    template: 'Income',
+                    field: "type",
+                    title: "type",
+                }, {
+                    template: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print,',
+                    field: "description",
+                    title: "description",
+                }]
+            });
+            // pager
+
+            var dataSource = new kendo.data.DataSource({
+                data: [
+                    { productName: "Tea", category: "Beverages" },
+                    { productName: "Coffee", category: "Beverages" },
+                    { productName: "Ham", category: "Food" },
+                    { productName: "Bread", category: "Food" }
+                ],
+                pageSize: 2
+            });
+            $("#categoryGrid_pager").kendoPager({
+                dataSource: dataSource,
+            });
+            dataSource.read();
+
+            $("#categoryGrid_pager")
+                .append("<div class='more-oprion'><span class='separator'></span><a href='javascript:void(0)' id='moreOption' class='text-muted btn-default-hover'><i class='icon-option'></i></a></div>");
+
+
+            //Contextmenu popover left click for grid pager
+            var popup = $("#popup").kendoPopup({
+                animation: false,
+                anchor: $("#moreOption"),
+                origin: "top right",
+                position: "bottom right",
+                collision: "fit",
+
+            }).data("kendoPopup");
+
+            $("#moreOption").click(function () {
+                $("#popup").data("kendoPopup").open()
+            });
+
+            $("#pagerDropdown").kendoDropDownList({
+                popup: {
+                    appendTo: 'body'
+                }
+            });
+
+            $("#addcategory").kendoWindow({
+                animation: false,
+                width: '600px',
+                height: '480px',
+                visible: false,
+                draggable: false,
+                resizable: false,
+                title: "Add Express",
+                actions: [
+                    "Close"
+                ],
+                modal: true,
+
+            }).data("kendoWindow");
+
+            $(".datetimepicker").kendoDateTimePicker({
+                value: new Date()
+            });
+
+
+
+        });
+
+
+        function openAddEventPopup() {
+            $("#addcategory").data("kendoWindow").center().open();
+        }
+    </script>
+</body>
+
+</html>

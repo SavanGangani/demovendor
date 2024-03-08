@@ -1,0 +1,2014 @@
+﻿@{
+    ViewBag.Title = "Order";
+    Layout = "~/Views/Shared/_MyVendorLayout.cshtml";
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--meta tags-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <title>Order</title>
+    <!-- favicon -->
+    <!--<link rel="shortcut icon" href="../../App_Themes/Default/images/favicon.ico" type="image/x-icon">-->
+    <link href="~/App_Themes/Default/css/popup.css" rel="stylesheet" />
+    <script src="~/Scripts/pop_up_message.js"></script>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+    @*<link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />*@
+    @*<link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/fonts.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/styleguide.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/kendo.Deeppurple.css" rel="stylesheet" />*@
+
+
+    <!-- css -->
+    <link href="../../App_Themes/Default/css/core-pocket.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/core-pocket-responsive.css" rel="stylesheet" />
+
+    @*Order JS*@
+
+
+    <script>
+
+        var API_URL = "@System.Configuration.ConfigurationManager.AppSettings["APIBase"]";
+        var UI_URL = " @System.Configuration.ConfigurationManager.AppSettings["UIBase"]";
+
+
+    </script>
+
+
+</head>
+
+<body>
+    <div class="mt-container mt-container-fluid h100 pl-20 pr-20">
+        <section id="main_splitter" class="k-spliter h100">
+            <div class="center-pane h100 event-pane-wrapper">
+                <header class="grid-header">
+                    <h5 class="title text-primary display-block">Order Details</h5>
+                    <div class="searchbar d-flex align-items-center mb-0">
+                        <div class="input-search">
+                            <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                               data-role="aratooltipv2"></i>
+                            <input type="search" name="search" id="search" class="form-control k-textbox" placeholder="Search here..."
+                                   aria-label="Search" autocomplete="off">
+                        </div>
+
+                        <div class="action-div dropdown">
+                            <a class="btn btn-raised btn-primary btn-block action-btn" style="padding-top:10px">
+                                <i class="icon-action"></i><span>Action</span></span>
+                            </a>
+                            <ul class="dropdown-menu right">
+                                <li>
+                                    <a href="javascript:void(0)" id="addEventLink" onclick="openAddEventPopup()">
+                                        <i class="icon-plus"></i><span>
+                                            Order/Service
+                                        </span>
+                                    </a>
+                                </li>
+                                @*<li>
+                                        <a href="javascript:void(0)" id="showservice">
+                                            <i class="icon-plus"></i><span>
+                                                Service Details
+                                            </span>
+                                        </a>
+
+                                    </li>*@
+                            </ul>
+                        </div>
+                    </div>
+                </header>
+
+
+                <div class="view-wrapper">
+                    <div class="grid-wrapper h100" id="list_view_content">
+                        <div id="categoryGrid" class="mb-0"></div>
+                        <div id="categoryGrid_pager" class="with-more-option">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- add category window -->
+    <div id="addcategory" style="display: none;">
+        <div class="wrapper">
+            @*<div class="form-group">
+                    <label for="addCat">Date :</label>
+                    <span id="todaydate">&nbsp;@DateTime.Now.Date.ToShortDateString()</span>
+                </div>*@
+
+            <div class="form-group">
+                <label for="tblName">
+                    Vendor Name:
+                    <span class="text-danger" aria-hidden="true">*</span>
+                </label>
+                <div class="form-group-content" style="margin-top:10px;">
+                    <select id="vendorselect"></select>
+                    <span id="dropvname"></span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top:15px;">
+                <ul class="radiolist">
+                    <li>
+                        <input type="radio" name="type" id="Expense" class="k-radio" onclick="openAddEventPopup1();">
+                        <label class="k-radio-label" for="Expense">New Order</label>
+                    </li>
+                    <li>
+                        <input type="radio" name="type" id="Income" class="k-radio" onclick="openAddEventPopup2();">
+                        <label class="k-radio-label" for="Income">Service</label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <!-- add category window -->
+    <!-- option menu -->
+    <ul id="popup" class="grid-options" style="display: none;">
+        <li class="goto">
+            <span class="text-muted">Go to page</span>
+            <span>
+                <input type="text" id="page_goto" class="form-control" />
+            </span>
+            <span class="text-muted">0</span>
+            <span class="text-muted">pages</span>
+        </li>
+        <li class="rpp">
+            <span class="text-muted">Record per page</span>
+            <select class="k-dropdown" id="pagerDropdown">
+                <option>5</option>
+                <option>10</option>
+                <option>15</option>
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+                <option>200</option>
+            </select>
+        </li>
+    </ul>
+    <!-- option menu -->
+    <!-- New Order Popup-->
+    <div id="newOrder" style="display: none;">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="addCat">
+                            Date :
+                            <span class="text-danger">*</span>
+                            @*<span><input type="date" id="order" name="order" class="form-control" min="" /></span>
+                                <span id="dateValidationMessage"></span>*@
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="addCat">
+                            Date :
+                            <span class="text-danger">*</span>*@
+                        <span><input type="date" id="order" name="order" class="form-control" min="" /></span>
+                        <span id="dateValidationMessage"></span>
+                        @*</label>*@
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="vdendoremailO">Vendor Email:</label>
+                        @*<span id="vendoremailO"></span>*@
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="vdendoremailO">Vendor Email:</label>*@
+                        <span id="vendoremailO"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <span><label for="vendorName">Vendor Name:</label></span>
+                        @*<span id="vendorName"></span>*@
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<span><label for="vendorName">Vendor Name:</label></span>*@
+                        <span id="vendorName"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="vdendornoO">Vendor Contact:</label>*
+                        @* <span id="vendornoO"></span>*@
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @* <label for="vdendornoO">Vendor Contact:</label>*@
+                        <span id="vendornoO"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="form-grop">
+                <div class="input-search">
+                    <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                       data-role="aratooltipv2"></i>
+                    <input type="search" name="searchorder" id="searchorder" class="form-control" placeholder="Search Items..."
+                           aria-label="Search" autocomplete="off">
+                </div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="form-group">
+                <table class="table" align="center">
+                    <thead style="background: rgb(126, 87, 194);color:white;">
+                        <tr>
+                            <th style="width:7%"></th>
+                            <th scope="col">Items</th>
+                            <th scope="col">Quantity</th>
+                        </tr>
+                    </thead>
+                </table>
+                <table class="table" align="center" id="subcat" style="max-height:30px;overflow-y:scroll;table-layout:fixed"></table>
+            </div>
+        </div>
+
+        <div class="window-footer dir-rtl">
+            <button class="btn btn-primary" id="btnorder" onclick="RequestOrder()">Request Order</button>
+        </div>
+
+    </div>
+
+    <!--DELETE POPUP-->
+
+
+    <div id="deletePopup" style="display:none">
+        <p class="fs-20 font-medium text-center text-dark pb-20 mb-10 pt-20">Are you sure you want to delete this?</p>
+        <div class="text-center">
+            <button type="button" id="btnYesResponse" class="btn btn-raised k-button btn-danger" tabindex="0">Yes</button>
+            <button type="button" id="btnNoResponse" class="btn btn-raised k-button btn-trans" tabindex="0">No</button>
+        </div>
+    </div>
+    <!-- New Order Popup close-->
+    <!--view Order Detail Popup-->
+    <div id="vieworderdetail" style="display: none;">
+        <hr style="width:100%" />
+        <div class="col-lg-12">
+            <div class="col-lg-7">
+                <span id="viewvname" style="font-size:larger">Vendor Name&nbsp;&nbsp;&nbsp;&nbsp;:</span>
+                <span id="invname" style="font-size:larger"></span>
+                <br /><br />
+                @*<span id="Orderdate" style="font-size:medium">Order Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                    <span id="WOrderdate" style="font-size:medium"></span>
+                    <br /><br />*@
+                <span id="OrderNo" style="font-size:medium">Order Number&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="WOrderNo" style="font-size:medium"></span>
+                <br /><br />
+                <span id="VendorEmail" style="font-size:medium">Vendor Email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="Vemail" style="font-size:medium"></span>
+                <br /><br />
+                <span id="VendorNo" style="font-size:medium">Vendor Number&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="VNo" style="font-size:medium"></span>
+                <br /><br />
+                <span id="OrderStatus" style="font-size:medium">Order Status&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="Ostatus" style="font-size:medium"></span>
+            </div>
+            <div class="col-lg-5">
+                <table class="table" style="width:550px">
+                    <thead style="background:#efefef ;color:black;">
+                        <tr>
+                            <th scope="col">Items</th>
+                            <th scope="col">Quantity</th>
+                        </tr>
+                    </thead>
+                </table>
+                <table class="table" align="center" id="Vieworder" style="width:550px;max-height:30px;overflow-y:scroll;table-layout:fixed"></table>
+            </div>
+        </div>
+    </div>
+
+    <!--Odrer details close-->
+
+
+    <div id="service" style="display: none;">
+        <div class="window-wrapper">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="addCat">
+                                    Date :
+                                    <span class="text-danger">*</span>
+                                    @*<span><input type="date" id="sdate" name="sdate" class="form-control" min="" width="500px;" /></span>
+                                        <span id="servicedatevalid"></span>*@
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            @*
+                                <div class="form-group">
+                                   <label for="addCat">
+                                   Date :
+                                   <span class="text-danger">*</span>*@
+                            <span><input type="date" id="sdate" name="sdate" class="form-control" min="" width="500px;" /></span>
+                            <span id="servicedatevalid"></span>
+                            @*</label>*@
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <span><label for="vendorNameO">Vendor Name:</label></span>
+                                @*<span id="vendorNameO"></span>*@
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                @*<span><label for="vendorNameO">Vendor Name:</label></span>*@
+                                <span id="vendorNameO"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <span><label for="vendoremailS">Vendor Email:</label></span>
+                                @* <span id="vendoremailS"></span>*@
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                @*<span><label for="vendoremailS">Vendor Email:</label></span>*@
+                                <span id="vendoremailS"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <span><label for="vendornoS">Vendor Contact:</label></span>
+                                @*<span id="vendornoS"></span>*@
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                @* <span><label for="vendornoS">Vendor Contact:</label></span>*@
+                                <span id="vendornoS"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="wrapper">
+                <div class="form-grop">
+                    <div class="input-search">
+                        <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                           data-role="aratooltipv2"></i>
+                        <input type="search" name="serviceorderup" id="serviceorderup" class="form-control" placeholder="Search Items..."
+                               aria-label="Search" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <table class="table" align="center">
+                <thead style="background:rgb(126,87,194); color:white;" width="50%">
+                    <tr>
+                        <th style="width:9%"></th>
+                        <th scope="col"><b>Items</b></th>
+                        <th scope="col" style="width: 34%;"><b>Service/Repair</b></th>
+                        <th scope="col" style="width: 36%;"><b>Notes</b></th>
+                    </tr>
+                </thead>
+            </table>
+            <table class="table" align="center" id="subcatorder">
+                <tbody style="max-height:30px;overflow-y:scroll;table-layout:fixed"></tbody>
+            </table>
+
+        </div>
+        <div class="window-footer dir-rtl" style="position:fixed;margin-left:470px;">
+            <button class="btn btn-primary" onclick="SorderDateValid()">Order</button>
+        </div>
+    </div>
+
+
+    <div class="notification-box success" id="success-box-order">
+        <div class="notification-alert success">
+            <div class="pull-left"><i class="icon-check" aria-hidden="false"></i></div>
+            <div class="pull-right" role="alert" aria-label="Success">
+                <h5>Success!</h5>
+                <p>Order Added Successfully..</p>
+            </div>
+            <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-success-order"><i class="icon-cancel" aria-hidden="true"></i></a>
+        </div>
+    </div>
+
+    <!-- Service Popup close-->
+    <!-- New Order update Popup-->
+    <div id="updateOrder" style="display: none;">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="addCat">
+                            Date :
+                            <span class="text-danger">*</span>
+                            @*<span>
+                                    <input type="date" class="form-control" id="date" />
+                                    <span id="dateValidationMessageUpdate"></span>
+                                </span>*@
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="addCat">
+                            Date :
+                            <span class="text-danger">*</span>*@
+                        <span>
+                            <input type="date" class="form-control" id="date" />
+                            <span id="dateValidationMessageUpdate"></span>
+                        </span>
+                        @*</label>*@
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="vendorName">Vendor Name: @*<span id="editvname"</span>*@</label>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="vendorName">Vendor Name:*@ <span id="editvname"</span>@*</label>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="editid" />
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="upovemail">Vendor Email: @*<span id="upovemail"</span>*@</label>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="upovemail">Vendor Email:*@ <span id="upovemail"</span>@*</label>*@
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="upovno">Vendor Contact: @*<span id="upovno"</span>*@</label>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="upovno">Vendor Contact:*@ <span id="upovno"</span>@*</label>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="form-grop">
+                <div class="input-search">
+                    <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                       data-role="aratooltipv2"></i>
+                    <input type="search" name="searchorderup" id="searchorderup" class="form-control" placeholder="Search Items..."
+                           aria-label="Search" autocomplete="off">
+                    <input type="hidden" id="orderidhidden" />
+                </div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="form-group">
+                <table class="table fixed_header" align="center" style="overflow-y:auto;">
+                    <thead style="background: rgb(126, 87, 194);color:white;">
+                        <tr>
+                            <th scope="col">Items</th>
+                            <th scope="col">Quantity</th>
+                        </tr>
+                    </thead>
+                </table>
+                <table class="table" align="center" id="orderedit" style="max-height:30px;overflow-y:scroll;table-layout:fixed"></table>
+            </div>
+        </div>
+        <div class="window-footer dir-rtl">
+            <button class="btn btn-trans">Reset</button>
+            <button class="btn btn-primary" id="btnupdateorder" onclick="UpdateOrder();">Update Order</button>
+        </div>
+    </div>
+    <!-- New Order update Popup close-->
+    <!-- Order Popup close-->
+    @*<div id="deletePopupOrderOrder" style="display:none">
+            <p class="fs-20 font-medium text-center text-dark pb-20 mb-10 pt-20">Are you sure you want to delete this?</p>
+            <div class="text-center">
+                <button type="button" id="btnYesResponse" class="btn btn-raised k-button btn-danger" tabindex="0">Yes</button>
+                <button type="button" id="btnNoResponse" class="btn btn-raised k-button btn-trans" tabindex="0">No</button>
+            </div>
+        </div>*@
+
+    <!--Updte order previous date disable  script-->
+
+    <script>
+        var date = new Date();
+        var tdate = date.getDate();
+        var month = date.getMonth() + 1;
+        if (tdate < 10) {
+            tdate = '0' + tdate;
+        }
+        if (month < 10) {
+            month = '0' + month;
+        }
+        var year = date.getUTCFullYear();
+        var minDate = year + "-" + month + "-" + tdate;
+        document.getElementById("date").setAttribute('min', minDate)
+        document.getElementById("sdate").setAttribute('min', minDate)
+        document.getElementById("order").setAttribute('min', minDate)
+    </script>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+    @*<link href="~/App_Themes/Default/css/OrderUpdate.css" rel="stylesheet" />*@
+    <script>
+        var VendarId;
+        var ReqOrder = [];
+        var Services = [];
+        var Orderdate;
+
+        function orderDateValid() {
+            var orderdate = document.getElementById("order").value;
+            var qauntity = document.getElementById("qtadd").value;
+
+            if (orderdate == "") {
+                document.getElementById("dateValidationMessage").style.color = "red";
+                document.getElementById("order").style.borderColor = "red";
+                document.getElementById("dateValidationMessage").innerHTML = "Please Select Date";
+                return false;
+
+            }
+            else {
+                document.getElementById("dateValidationMessage").style.color = "";
+                document.getElementById("order").style.borderColor = "grey";
+                document.getElementById("dateValidationMessage").innerHTML = "";
+                return true;
+            }
+
+            if (qtadd == 0) {
+                document.getElementById("qtValidationMessage").style.color = "red";
+                document.getElementById("qtadd").style.borderColor = "red";
+                document.getElementById("qtValidationMessage").innerHTML = "Please enter qauntity.";
+                return false;
+            }
+            else {
+                document.getElementById("qtValidationMessage").style.color = "";
+                document.getElementById("qtadd").style.borderColor = "grey";
+                document.getElementById("qtValidationMessage").innerHTML = "";
+                return true;
+            }
+
+        }
+        //service v
+        function SorderDateValid() {
+            var orderdate = document.getElementById("sdate").value;
+            //var qauntity = document.getElementById("qtadd").value;
+
+            if (orderdate == "") {
+                document.getElementById("servicedatevalid").style.color = "red";
+                document.getElementById("sdate").style.borderColor = "red";
+                document.getElementById("servicedatevalid").innerHTML = "Please Select Date";
+                return false;
+
+            }
+            else {
+                document.getElementById("servicedatevalid").style.color = "";
+                document.getElementById("sdate").style.borderColor = "grey";
+                document.getElementById("servicedatevalid").innerHTML = "";
+                Order();
+            }
+        }
+
+        function serviceorder()
+        {
+            var sdate = serviceorder();
+
+            if(sadte)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        function updateOrderValid() {
+            //debugger
+            var orderupdate = document.getElementById("date").value;
+            var upqt = document.getElementById("qt").value;
+
+            if (orderupdate == "") {
+                document.getElementById("dateValidationMessageUpdate").style.color = "red";
+                document.getElementById("date").style.borderColor = "red";
+                document.getElementById("dateValidationMessageUpdate").innerHTML = "Please Select Date";
+                return false;
+
+            }
+            else {
+                document.getElementById("dateValidationMessageUpdate").style.color = "";
+                document.getElementById("date").style.borderColor = "grey";
+                document.getElementById("dateValidationMessageUpdate").innerHTML = "";
+                return true;
+            }
+
+            if (qt == 0) {
+                document.getElementById("upqtValidMessage").style.color = "red";
+                document.getElementById("qt").style.borderColor = "red";
+                document.getElementById("upqtValidMessage").innerHTML = "Please enter qauntity";
+                return false;
+
+            }
+            else {
+                document.getElementById("upqtValidMessage").style.color = "";
+                document.getElementById("qt").style.borderColor = "grey";
+                document.getElementById("upqtValidMessage").innerHTML = "";
+                return true;
+            }
+        }
+
+        function serviceValid() {
+
+            var servicedate = document.getElementById("sdate").value;
+
+            if (servicedate == "") {
+                document.getElementById("servicedatevalid").style.color = "red";
+                document.getElementById("sdate").style.borderColor = "red";
+                document.getElementById("servicedatevalid").innerHTML = "Please select date";
+                return false;
+            }
+            else {
+                document.getElementById("servicedatevalid").style.color = "";
+                document.getElementById("sdate").style.borderColor = "grey";
+                document.getElementById("servicedatevalid").innerHTML = "";
+                return true;
+            }
+
+
+
+        }
+
+
+        function successorder() {
+            document.getElementById("success-box-order").style.display = "block";
+
+            $("#close-success-order").click(function (event) { document.getElementById("success-box-order").style.display = "none"; })
+            id = "close-success-order"
+        }
+
+        function alertorder() {
+            document.getElementById("alert-box").style.display = "block";
+
+            $("#close-alert").click(function (event) { document.getElementById("alert-box").style.display = "none"; })
+            id = "close-alert"
+        }
+
+
+        function validatevname() {
+            var namechose = document.getElementById("vendorselect").value;
+
+            if (namechose == "") {
+                document.getElementById("dropvname").style.color = "red";
+                document.getElementById("dropvname").innerHTML = "Please Select Vendor.";
+                return false;
+            }
+            else {
+                document.getElementById("dropvname").style.color = "grey";
+                document.getElementById("dropvname").innerHTML = "";
+                return true;
+            }
+
+        }
+
+
+        $(document).ready(function () {
+            $("#vendorselect").change(function () {
+                if (validatevname) {
+                    document.getElementById("dropvname").style.color = "grey";
+                    document.getElementById("dropvname").innerHTML = "";
+                }
+            });
+
+            $("#updateOrder").kendoWindow({
+                animation: false,
+                width: '600px',
+                height: '380px',
+                visible: false,
+                draggable: false,
+                resizable: false,
+                title: "Update Order",
+                actions: [
+                    "Close"
+                ],
+                modal: true,
+
+            }).data("kendoWindow");
+
+
+        });
+
+        function gridDataBound(e) {
+            var grid = e.sender;
+            if (grid.dataSource.total() == 0) {
+                var colCount = grid.columns.length;
+                $(e.sender.wrapper)
+                    .find('tbody')
+
+                .append('<div style="width: 90vw;height: 50vh;display: flex;justify-content: center;"><div style="width: 400px; padding-top: 50px;"><img src="' + UI_URL + '"Image/datanotfound.png" style="height: 250px"></div></div>');
+
+            }
+        };
+
+        function displayOrderList() {
+            var d = new Date();
+            var today = d.getDate();
+            $("#categoryGrid").kendoGrid({
+                dataSource: {
+                    //type: "odata",
+                    transport: {
+                        read: API_URL + "api/ApiOrder"
+                    },
+                    pageSize: 8
+                },
+                dataBound: gridDataBound,
+                height: 500,
+                pageable: true,
+                sortable: true,
+                reorderable: true,
+                schema: {
+                    model: {
+                        id: "OrderId",
+                        fields: {
+                            OrderId: { editable: false, nullable: true },
+
+                        }
+                    }
+                },
+                columns: [{ selectable: true, width: "40px" },
+                            {
+
+                                template: "<div class='grid-action'><a onclick='editorder($(this))' class='text-muted'><i class='icon-edit1'></i></a><a onclick='ShowDetails($(this))' class='text-primary delete-btn'><i class='icon-show'></i></a></div>",
+                                field: "Action",
+                                title: "Action",
+                                width: 80
+                            },
+                            {
+                                field: "VendorName",
+                                title: "Vendor Name",
+                            },
+                            {
+                                field: "OrderType",
+                                title: "OrderType",
+                                template: "#if(OrderType == 'Active'){#<div><i class='icon-circle-filled' style='color:green'></i></div>#} else{#<div><i class='icon-circle-filled' style='color:red'></i></div>#}#",
+
+                            },
+                            {
+                                field: "LastPaymentDate",
+                                title: "LastPayment Date",
+                                template: '#= kendo.toString(kendo.parseDate(LastPaymentDate), "dd/MM/yyyy")#'
+                            },
+                            {
+                                field: "OrderDate",
+                                title: "Order Date",
+                                template: '#= kendo.toString(kendo.parseDate(OrderDate), "dd/MM/yyyy")#'
+                            },
+                            {
+                                field: "PaymentStatus",
+                                title: "Payment Status",
+                            },
+                ]
+            });
+
+        }
+
+        function editorder(e) {
+
+            // debugger;
+            //Fetch Date From Grid
+            function formatDate(date) {
+                var d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+
+                if (month.length < 2)
+                    month = '0' + month;
+                if (day.length < 2)
+                    day = '0' + day;
+
+                return [year, month, day].join('-');
+            }
+
+
+            var Bindorder = '';
+            $('#orderedit').empty();
+
+            $("#updateOrder").data("kendoWindow").center().open();
+
+            var grid = $("#categoryGrid").data("kendoGrid");
+            var row = e.select().closest("tr");
+            var dataitem = grid.dataItem(row);
+
+            $("#orderidhidden").val(dataitem.OrderId);
+            $.ajax({
+                sync: true,
+                url: API_URL + "api/ApiOrder/" + dataitem.OrderId,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                //processData: false,
+                type: 'GET',
+                success: function (data) {
+                    document.getElementById('editvname').innerHTML = dataitem.VendorName;
+                    document.getElementById('editid').value = dataitem.OrderId;
+                    document.getElementById('date').value = formatDate(dataitem.OrderDate);
+
+                    if (data) {
+                        $.each(data,
+                        function (i, value) {
+                            $("#upovemail").text(data[i].VendorEmail)
+                            $("#upovno").text(data[i].VendorNo)
+                            Bindorder += '<tr><td><span id="subname-' + i + '">' + value.SubCatName + '</span></td>' +
+                            '<td><input type="number" min="0" value="' + value.Quantity + '" style="width:80px;text-align:end;" id="qt"></td>'
+                            + '<span id="qtValidationMessage"></span>' +
+                            '<td><input type="hidden" min="0" value="' + value.SubCatId + '"></td>' +
+                            '</tr>';
+                        });
+                        $('#orderedit').append(Bindorder); //tbluser -> table id 6
+                    }
+                }
+
+            });
+
+
+        }
+
+
+
+        function ShowDetails(e) {
+
+            var grid = $("#categoryGrid").data("kendoGrid");
+            var row = e.select().closest("tr");
+            var dataitem = grid.dataItem(row);
+            var BindViewOrder = '';
+            $("#Vieworder").empty();
+            openAddEventPopupViewOrder()
+
+            $.ajax({
+                sync: true,
+                url: API_URL + "api/ApiOrder/" + dataitem.OrderId,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                //processData: false,
+                type: 'GET',
+                success: function (data) {
+                    if (data) {
+                        $("#WOrderdate").text(dataitem.OrderDate)
+                        $("#WOrderNo").text(dataitem.OrderId)
+                        $("#invname").text(dataitem.VendorName)
+                        $.each(data,
+                        function (i, value) {
+                            $("#Vemail").text(data[i].VendorEmail)
+                            $("#VNo").text(data[i].VendorNo)
+                            $("#Ostatus").text(data[i].OrderType)
+
+                            BindViewOrder += '<tr><td><span id="vsubname-' + i + '">' + data[i].SubCatName + '</span></td>' +
+                            '<td><span style="width:80px;text-align:end;  id="vqt"">' + data[i].Quantity + '</span></td>'
+                            '</tr>';
+                        });
+                        $('#Vieworder').append(BindViewOrder); //tbluser -> table id 6
+                    }
+                }
+
+            });
+        }
+
+        //insert order
+        function RequestOrder() {
+            //debugger;
+            var Ischecked;
+
+            $('#subcat tr').each(function () {
+                //console.log("Start")
+
+                var vname = $('#vendorNameO').text();
+                var vemail = $("#vendoremailO").text()
+                var vmobile = $("#vendornoO").text()
+                var item;
+                var quntity;
+                //debugger;
+                this.cells[0].innerHTML
+                //console.log(this.cells[0].innerHTML)
+                Orderdate = document.getElementById("order").value;
+                item = $(this).closest('tr').find("input").eq(2).val()
+                quntity = $(this).closest('tr').find("input").eq(1).val();
+                var subName = $(this).closest('tr').find("span").eq(0).text();
+                Ischecked = $(this).closest('tr').find("input").eq(0).is(":checked");
+
+                var order = {
+                    OrderDate: Orderdate,
+                    VendorId: VendarId,
+                    VendorName: vname,
+                    SubCatId: item,
+                    Quantity: quntity,
+                    SubCatName: subName,
+                    VendorEmail: vemail,
+                    VendorNo: vmobile
+                }
+
+                if (Ischecked == true)
+                {
+                    if (quntity > 0) {
+                        ReqOrder.push(order);
+                    }
+                    else {
+                        ReqOrder = []
+                        alert_popup('Please fill order details !')
+                        setTimeout(function () {
+                            document.getElementById("alert-box").style.display = "none";
+                        }, 2000)
+                    }
+                }
+            });
+
+            if (orderDateValid()) {
+                if (ReqOrder.length == 0) {
+                    alert_popup('Please fill order details !')
+                    setTimeout(function () {
+                        document.getElementById("alert-box").style.display = "none";
+                    }, 2000);
+                }
+                else {
+                    InsertOrderItems(ReqOrder)
+                }
+            }
+
+
+
+        }
+
+        function InsertOrderItems(ReqOrder) {
+            $.ajax({
+                sync: true,
+                url: API_URL + "api/ApiOrder/",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(ReqOrder),
+                //processData: false,
+                type: 'POST',
+                success: function (response) {
+                    if (response) {
+                        $("#newOrder").data("kendoWindow").close()
+                        successorder();
+                        setTimeout(function () {
+                            document.getElementById("success-box-order").style.display = "none";
+                            displayOrderList()
+                        }, 2000);
+                        ReqOrder = [];
+                    }
+                    else {
+                        $("#newOrder").data("kendoWindow").close()
+                        $("#addcategory").data("kendoWindow").close()
+                        alert_popup('Order Failed !')
+                        setTimeout(function () {
+                            document.getElementById("alert-box").style.display = "none";
+                            displayOrderList()
+                        }, 2000);
+                        ReqOrder = [];
+                    }
+                }
+            });
+        }
+
+
+
+        //$(document).ready(function () {
+            $("#date").change(function () {
+
+                if (updateOrderValid()) {
+                    document.getElementById("DateValidateMessage").innerHTML = "";
+                    document.getElementById("date").style.borderColor = "grey";
+                    document.getElementById("DateValidateMessage").style.color = "grey";
+                }
+            });
+
+            $("#qt").change(function () {
+                //debugger
+                if (updateOrderValid()) {
+                    document.getElementById("upqtValidMessage").innerHTML = "";
+                    document.getElementById("qt").style.borderColor = "grey";
+                    document.getElementById("upqtValidMessage").style.color = "grey";
+                }
+            });
+
+            //$("#order").change(function () {
+            //    //debugger;
+
+            //        document.getElementById("DateValidateMessage").innerHTML = "";
+            //        document.getElementById("order").style.borderColor = "grey";
+            //        document.getElementById("DateValidateMessage").style.color = "grey";
+
+            //});
+
+            $("#qtadd").change(function () {
+                if (orderDateValid()) {
+                    document.getElementById("qtValidationMessage").innerHTML = "";
+                    document.getElementById("qtadd").style.borderColor = "grey";
+                    document.getElementById("qtValidationMessage").style.color = "grey";
+                }
+            });
+
+            $("#sdate").change(function () {
+                if (serviceValid()) {
+
+                    document.getElementById("servicedatevalid").innerHTML = "";
+                    document.getElementById("sdate").style.borderColor = "grey";
+                    document.getElementById("servicedatevalid").style.color = "grey";
+                }
+            });
+        //});
+
+
+
+        function widgetChange(е) {
+            $("#lblvendoid").val(this.value());
+            //alert(this.value())
+        };
+
+
+        $(document).ready(function () {
+            //debugger;
+            $.ajax({
+                url: API_URL + "api/apiVendorDD/",
+                method: "GET",
+                success: function (data) {
+                    $("#vendorselect").kendoDropDownList({
+                        dataSource: data,
+                        dataTextField: "c_vname",
+                        dataValueField: "c_vid",
+                        optionLabel: "Select Vendor Name",
+                        change: onchange
+                        //select: onchange
+
+                    }).data('kendoDropDownList');
+                }
+
+            });
+        });
+
+        function onchange() {
+            VendarId = $("#vendorselect").kendoDropDownList().data('kendoDropDownList').value()
+            var ddnm = $("#vendorselect").data('kendoDropDownList').text();
+            $("#vendorName").text(ddnm)
+            $("#vendorNameO").text(ddnm)
+
+        }
+
+        function getSubCategory() {
+            var BindUser = '';
+            $('#subcat').empty();
+            $.ajax({
+                url: API_URL + "api/apiVendorDD/GetVendorOne?id=" + VendarId,
+                dataType: "json",
+                success: function (data) {
+                    // debugger
+                    if (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            $("#vendoremailO").text(data[i].VendorEmail)
+                            $("#vendornoO").text(data[i].VendorMobile)
+                        }
+
+                    }
+                }
+            });
+
+            $.ajax({
+                url: API_URL + "api/apiVendorDD/" + VendarId,
+                method: "GET",
+                success: function (data) {
+                    //console.log(data)
+                    if (data) {
+                        $.each(data,
+                        function (index, value) {
+                            //id = value.id;
+                            BindUser += '<tr><td style="width: 4%;"><input type="checkbox" class="k-checkbox" id="isorder' + index + '">' +
+                                '<label class="k-checkbox-label" for="isorder' + index + '"></label></td>' +
+                                '<td style="width: 36%;"><span>' + value.c_SubName + '</span></td>' +
+                            '<td><input type="number" min="0" value="0" style="width:80px;text-align:end;" id="qtadd"></td>'
+                            + '<span id="qtValidationMessage"></span>' +
+                            '<td><input type="hidden" min="0" value="' + value.c_SubId + '"></td>' +
+                            '</tr>';
+                        });
+                        $('#subcat').append(BindUser); //tbluser -> table id 6
+                    }
+
+                }
+
+            });
+        }
+
+        $(document).ready(function () {
+            $("#searchorder").keyup(function () {
+
+                if ($("#searchorder").val() == "")
+                {
+                    getSubCategory()
+                }
+                else
+                {
+                    searchOrderData()
+
+                }
+            });
+
+            $("#searchorderup").keyup(function () {
+                if ($("#searchorderup").val() == "") {
+                    var orderid = $("#orderidhidden").val()
+
+                    function editorder(orderid) {
+
+                        // debugger;
+                        //Fetch Date From Grid
+                        function formatDate(date) {
+                            var d = new Date(date),
+                                month = '' + (d.getMonth() + 1),
+                                day = '' + d.getDate(),
+                                year = d.getFullYear();
+
+                            if (month.length < 2)
+                                month = '0' + month;
+                            if (day.length < 2)
+                                day = '0' + day;
+
+                            return [year, month, day].join('-');
+                        }
+
+
+                        var Bindorder = '';
+                        $('#orderedit').empty();
+
+                        $("#updateOrder").data("kendoWindow").center().open();
+                        $.ajax({
+                            sync: true,
+                            url: API_URL + "api/ApiOrder/" + orderid,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            //processData: false,
+                            type: 'GET',
+                            success: function (data) {
+                                document.getElementById('editvname').innerHTML = dataitem.VendorName;
+                                document.getElementById('editid').value = dataitem.OrderId;
+                                document.getElementById('date').value = formatDate(dataitem.OrderDate);
+
+                                if (data) {
+                                    $.each(data,
+                                    function (i, value) {
+                                        $("#upovemail").text(data[i].VendorEmail)
+                                        $("#upovno").text(data[i].VendorNo)
+                                        Bindorder += '<tr><td><span id="subname-' + i + '">' + value.SubCatName + '</span></td>' +
+                                        '<td><input type="number" min="0" value="' + value.Quantity + '" style="width:80px;text-align:end;" id="qt"></td>'
+                                        + '<span id="qtValidationMessage"></span>' +
+                                        '<td><input type="hidden" min="0" value="' + value.SubCatId + '"></td>' +
+                                        '</tr>';
+                                    });
+                                    $('#orderedit').append(Bindorder); //tbluser -> table id 6
+                                }
+                            }
+
+                        });
+
+
+                    }
+
+                }
+                else {
+                    searchOrderDataUp()
+
+                }
+
+            });
+
+            $("#serviceorderup").keyup(function () {
+                if ($("#serviceorderup").val() == "") {
+                    getSubCategoryService()
+                }
+                else {
+                    searchService()
+
+                }
+
+            });
+
+
+        });
+
+
+        function searchOrderDataUp()
+        {
+            var updata = $("#searchorderup").val()
+            var BindUser = '';
+            $("#orderedit").empty();
+            $.ajax({
+                url: API_URL + "api/OrderSearchApi/",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(updata),
+                success: function (data) {
+                    if (data) {
+
+                        for (var i = 0; i < data.length; i++) {
+                            BindUser += '<tr><td><span id="subname-' + i + '">' + data[i].SubCatName + '</span></td>' +
+                           '<td><input type="number" min="0" value="' + data[i].Quantity + '" style="width:80px;text-align:end;" id="qt"></td>'
+                           + '<span id="qtValidationMessage"></span>' +
+                           '<td><input type="hidden" min="0" value="' + data[i].SubCatId + '"></td>' +
+                           '</tr>';
+
+                        }
+                        $('#orderedit').append(BindUser); //tbluser -> table id 6
+
+                    }
+
+                }
+
+            });
+
+        }
+
+        function searchOrderData()
+        {
+            var sdata = $("#searchorder").val()
+           var BindUser = '';
+           $("#subcat").empty();
+            $.ajax({
+                url: API_URL + "api/OrderSearchApi/",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(sdata),
+                success: function (data) {
+                    if (data) {
+
+                        for (var i = 0; i < data.length; i++) {
+                            BindUser += '<tr><td style="width: 4%;"><input type="checkbox" class="k-checkbox" id="isorder' + i + '">' +
+                                '<label class="k-checkbox-label" for="isorder' + i + '"></label></td>' +
+                                '<td style="width: 36%;"><span>' + data[i].SubCatName + '</span></td>' +
+                            '<td><input type="number" min="0" value="0" style="width:80px;text-align:end;" id="qtadd"></td>'
+                            '<td><input type="hidden" min="0" value="' + data[i].SubCatId + '"></td>' +
+                            '</tr>';
+                        }
+                        $('#subcat').append(BindUser); //tbluser -> table id 6
+
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        function searchService() {
+            var updata = $("#serviceorderup").val()
+            var BindUser = '';
+            $("#subcatorder").empty();
+            $.ajax({
+                url: API_URL + "api/OrderSearchApi/",
+                type: "PUT",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(updata),
+                success: function (data) {
+                    if (data) {
+
+                        for (var i = 0; i < data.length; i++) {
+                            BindUser += '<tr><td style="width: 4%;"><input type="checkbox" class="k-checkbox" id="isorder' + i + '">' +
+                                '<label class="k-checkbox-label" for="isorder' + i + '"></label></td>' +
+                                '<td style="width: 36%;"><span>' + data[i].SubCatName + '</span></td>' +
+                            '<td><input type="number" min="0" value="0" style="width:80px;text-align:end;" id="qtadd"></td>'
+                            '<td><input type="hidden" min="0" value="' + data[i].SubCatId + '"></td>' +
+                            '</tr>';
+                        }
+                        $('#subcatorder').append(BindUser); //tbluser -> table id 6
+
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        //Add order data
+        function AddSubCategory() {
+
+            var id = $("#vid").val()
+            var CourseData = {
+                c_Id: $("#oid").val(),
+                Name: $("#venname").val(),
+            }
+
+
+            //for new one
+            if (id == '') {
+                var settings = {
+                    "url": API_URL + "/api/DropdownVendorAPI/",
+                    "method": "POST",
+                    "timeout": 0,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "data": JSON.stringify(CourseData),
+                };
+                $.ajax(settings).done(function (response) {
+                    if (response) {
+
+                        $("#addcategory").data("kendoWindow").close()
+                        subcatInsert();
+                        setTimeout(function () {
+                            document.getElementById("success-box-subcat").style.display = "none";
+                            displaySubCategory()
+                        }, 2000);
+                    }
+                    else {
+                        alert('Error Occured');
+                    }
+
+                });
+
+
+            }
+            else {
+
+                var settings = {
+
+                    "url": API_URL + "api/DropdownVendorAPI/?c_order_type=" + id,
+                    "method": "PUT",
+                    "timeout": 0,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "data": JSON.stringify(CourseData),
+                };
+                $.ajax(settings).done(function (response) {
+
+                    $("#addcategory").data("kendoWindow").close()
+                    subcatUpdate();
+                    setTimeout(function () {
+                        document.getElementById("success-box-subcat-update").style.display = "none";
+                        displaySubCategory()
+                    }, 2000);
+
+                });
+            }
+        }
+
+
+        //Edit Order
+        var Updateorder = [];
+        function UpdateOrder() {
+            Updateorder = [];
+
+            $('#orderedit tr').each(function () {
+                var item;
+                var quntity;
+                var SubName;
+                var vname = $("#editvname").text();
+                var upvemail = $("#upovemail").text()
+                var upvno = $("#upovno").text()
+
+
+                this.cells[0].innerHTML
+
+                //console.log($(this).closest('tr').find("input"))
+
+                subName = $(this).closest('tr').find("span").eq(0).text();
+                quntity = $(this).closest('tr').find("input").eq(0).val();
+                item = $(this).closest('tr').find("input").eq(1).val()
+
+                var data = {
+                    OrderId: $('#editid').val(),
+                    OrderDate: $('#date').val(),
+                    Quantity: quntity,
+                    VendorName: vname,
+                    SubCatId: item,
+                    SubCatName: subName,
+                    VendorEmail: upvemail,
+                    VendorNo: upvno
+                }
+
+                if (quntity > 0) {
+                    Updateorder.push(data);
+                }
+                else {
+                    Updateorder = []
+                    alert_popup('Please fill order details !')
+                    setTimeout(function () {
+                        document.getElementById("alert-box").style.display = "none";
+                    }, 2000)
+                }
+
+            });
+
+            //debugger
+            //console.log(Updateorder)
+            if (Updateorder.length == 0) {
+                alert_popup('Please fill order details !')
+                setTimeout(function () {
+                    document.getElementById("alert-box").style.display = "none";
+                }, 2000);
+            }
+            else {
+                UpdateOrderItems(Updateorder);
+            }
+
+        }
+
+        function UpdateOrderItems(Updateorder) {
+            var settings = {
+
+                "url": API_URL + "api/ApiOrder/",
+                "method": "PUT",
+                "timeout": 0,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "data": JSON.stringify(Updateorder),
+            };
+            $.ajax(settings).done(function (response) {
+                if (response == 1) {
+                    $("#updateOrder").data("kendoWindow").close()
+                    $("#addcategory").data("kendoWindow").close()
+                    success_popup('Order Update Successfully!')
+                    setTimeout(function () {
+                        document.getElementById("success-box").style.display = "none";
+                        displayOrderList()
+                    }, 2000);
+                    // alert('update success');
+                    //window.location.reload();
+                }
+            });
+
+        }
+
+        $(document).ready(function () {
+
+        });
+        // hide userprofile
+        $(document).click(function () {
+            //window.top.$('body').find('.userprofile-menu').removeClass('open');
+            //window.top.$('body').find('.userprofile').removeClass('active open');
+        });
+
+        // common select dropdown
+        $("select:not([multiple])").kendoDropDownList();
+
+
+        displayOrderList()
+
+        //Contextmenu popover left click for grid pager
+        var popup = $("#popup").kendoPopup({
+            animation: false,
+            anchor: $("#moreOption"),
+            origin: "top right",
+            position: "bottom right",
+            collision: "fit",
+
+        }).data("kendoPopup");
+
+        $("#moreOption").click(function () {
+            $("#popup").data("kendoPopup").open()
+        });
+
+        $("#pagerDropdown").kendoDropDownList({
+            popup: {
+                appendTo: 'body'
+            }
+        });
+
+        $("#updateOrder").kendoWindow({
+            animation: false,
+            width: '600px',
+            height: '400px',
+            visible: false,
+            draggable: false,
+            resizable: false,
+            title: "New Order",
+            actions: [
+                "Close"
+            ],
+            modal: true,
+        }).data("kendoWindow");
+
+
+        $("#newOrder").kendoWindow({
+            animation: false,
+            width: '600px',
+            height: '400px',
+            visible: false,
+            draggable: false,
+            resizable: false,
+            title: "New Order",
+            actions: [
+                "Close"
+            ],
+            modal: true,
+
+        }).data("kendoWindow");
+
+
+
+
+        $("#vieworderdetail").kendoWindow({
+            animation: false,
+            width: '700px',
+            height: '350px',
+            visible: false,
+            draggable: false,
+            resizable: false,
+            title: "Order Details",
+            actions: [
+                "Close"
+            ],
+            modal: true,
+
+        }).data("kendoWindow");
+
+        $("#service").kendoWindow({
+            animation: false,
+            width: '650px',
+            height: '450px',
+            visible: false,
+            draggable: false,
+            resizable: false,
+            title: "Service",
+            actions: [
+                "Close"
+            ],
+            modal: true,
+
+        }).data("kendoWindow");
+
+        $(".datetimepicker").kendoDateTimePicker({
+            value: new Date()
+        });
+
+
+        function openAddEventPopup() {
+            $('#Expense').prop('checked', false);
+            $('#Income').prop('checked', false);
+            document.getElementById("dropvname").innerHTML = "";
+            $("#vendorselect").data('kendoDropDownList').value('');
+            $("#addcategory").data("kendoWindow").center().open();
+
+        }
+
+        function openAddEventPopup1() {
+            if (validatevname()) {
+                $("#order").val('')
+                $("#searchorder").val('')
+                document.getElementById("dateValidationMessage").innerHTML = "";
+                document.getElementById("order").style.borderColor = "grey";
+                $("#newOrder").data("kendoWindow").center().open();
+                getSubCategory()
+            }
+
+        }
+
+        function openAddEventPopup2() {
+            if (validatevname()) {
+                $("#sdate").val('')
+                $("#service").data("kendoWindow").center().open();
+                document.getElementById("servicedatevalid").style.color = "";
+                document.getElementById("sdate").style.borderColor = "grey";
+                document.getElementById("servicedatevalid").innerHTML = "";
+                getSubCategoryService()
+            }
+        }
+
+        function openAddEventPopupViewOrder() {
+            $("#vieworderdetail").data("kendoWindow").center().open();
+        }
+
+        $('#search').on('input', function () {
+            var q = $("#search").val();
+            var grid = $("#categoryGrid").data("kendoGrid");
+            grid.dataSource.query({
+                page: 1,
+                pageSize: 10,
+                filter: {
+                    logic: "or",
+                    filters: [
+                      { field: "VendorName", operator: "contains", value: q },
+                      { field: "OrderDate", operator: "contains", value: q },
+                      { field: "PaymentStatus", operator: "contains", value: q },
+                      { field: "LastPaymentDate", operator: "contains", value: q }
+                    ]
+                }
+            });
+        });
+
+
+        //---------service---///
+
+        function getSubCategoryService() {
+            var BindUser = '';
+
+            $('#subcatorder').empty()
+            $.ajax({
+                url: API_URL + "api/apiVendorDD/GetVendorOne?id=" + VendarId,
+                dataType: "json",
+                success: function (data) {
+
+                    if (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            $("#vendoremailS").text(data[i].VendorEmail)
+                            $("#vendornoS").text(data[i].VendorMobile)
+                        }
+                    }
+                }
+            });
+
+            $.ajax({
+                url: API_URL + "api/ApiVendorDD/" + VendarId,
+                method: "GET",
+                success: function (data) {
+                    //console.log(data)
+                    if (data) {
+                        //debugger
+                        for (var i = 0; i < data.length; i++) {
+                            BindUser += '<tr><td style=""><input type="checkbox" class="k-checkbox" id="isservice' + i + '">' +
+                                '<label class="k-checkbox-label" for="isservice' + i + '"></label></td>' +
+                                '<td style="width: 18%;"><span for="items">' + data[i].c_SubName + '</span></td>' +
+                                '<td><input type="hidden" min="0" value="' + data[i].c_SubId + '" name="id"></td>' +
+                                '<td><input type="checkbox" name="" id="repair' + i + '" class="k-checkbox">' +
+                                '<label class="k-checkbox-label" for="repair' + i + '">Repair</label>' +
+                                '<input type="checkbox" name="" id="service' + i + '" class="k-checkbox">' +
+                                '<label class="k-checkbox-label" for="service' + i + '">Service</label><br /></td>' +
+                                '<td><input type="text" class="form-control" id="notes-"' + i + '"" name="notes" ></td>'
+
+                            '</tr>';
+                        }
+                        $('#subcatorder').append(BindUser); //tbluser -> table id 6
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#showservice").click(function () {
+                window.location.replace("/Order/Service");
+            });
+        });
+
+        function Order() {
+            //var Services;
+
+            var vname = $('#vendorNameO').text();
+            var sdate = $("#sdate").val();
+            var svemail = $("#vendoremailS").text()
+            var svmobile = $("#vendornoS").text()
+            $('#subcatorder tr').each(function () {
+
+                //console.log(Services);
+
+                //console.log("Start")
+                var Repair;
+                var Servicee;
+                var orderdate;
+                var notes;
+                var subid;
+
+                this.cells[0].innerHTML
+                //console.log($(this).closest('tr').find("input"))
+
+                //debugger
+                Repair = $(this).closest('tr').find("input").eq(2).is(':checked')
+                Servicee = $(this).closest('tr').find("input").eq(3).is(':checked')
+                var OSubname = $(this).closest('tr').find("span").eq(0).text()
+                servicedate = document.getElementById("sdate").value;
+                notes = $(this).closest('tr').find("input[name='notes']").eq(0).val();
+                subid = $(this).closest('tr').find("input[name='id']").eq(0).val();
+                var Ischecked = $(this).closest('tr').find("input").eq(0).is(":checked");
+                var Service = {
+                    ServiceDate: servicedate,
+                    VendorId: VendarId,
+                    VendorName: vname,
+                    Repair: Repair,
+                    Service: Servicee,
+                    SubCatName: OSubname,
+                    SubCatId: subid,
+                    VendorEmail: svemail,
+                    VendorMobile: svmobile,
+                    Notes: notes
+                }
+
+
+                if (Ischecked == true) {
+                    if (Repair == true || Servicee == true) {
+                        Services.push(Service);
+                    }
+                    else {
+                        Services = []
+                        alert_popup('Please fill service details !')
+                        setTimeout(function () {
+                            document.getElementById("alert-box").style.display = "none";
+                        }, 2000)
+                    }
+                }
+
+            });
+
+            //if (validDate()) {
+                if (Services.length == 0) {
+                    alert_popup('Please fill service details !')
+                    setTimeout(function () {
+                        document.getElementById("alert-box").style.display = "none";
+                    }, 2000);
+                }
+                else {
+                    OrderInsert(Services);
+                }
+            //}
+
+        }
+
+        function OrderInsert(Services) {
+            $.ajax({
+                sync: true,
+                url: API_URL + "api/ApiService/",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(Services),
+                //processData: false,
+                type: 'POST',
+                success: function (response) {
+                    if (response) {
+                        $("#service").data("kendoWindow").close()
+                        $("#addcategory").data("kendoWindow").close()
+                        success_popup('Service Added Successfully !')
+                        setTimeout(function () {
+                            document.getElementById("success-box").style.display = "none";
+                        }, 2000);
+                        window.location.replace("/Order/Service");
+                    }
+                    else {
+                        $("#service").data("kendoWindow").close()
+                        $("#addcategory").data("kendoWindow").close()
+                        alert_popup('Service Failed !')
+                        setTimeout(function () {
+                            document.getElementById("alert-box").style.display = "none";
+                        }, 2000);
+                        window.location.replace("/Order/Service");
+
+                    }
+                }
+            });
+        }
+
+
+    </script>
+
+    <script>
+        function validDate() {
+            //alert("call")
+            // debugger;
+            var Pdate = document.getElementById("sdate").value;
+
+            if (Pdate == "") {
+                document.getElementById("DateValidateMessage").style.color = "red";
+                document.getElementById("date").style.borderColor = "red";
+                document.getElementById("DateValidateMessage").innerHTML = "*Please enter a valid date";
+                return false;
+            }
+
+            else {
+                document.getElementById("DateValidateMessage").innerHTML = "";
+                document.getElementById("sdate").style.borderColor = "#dcdfe5";
+                return true;
+            }
+        }
+
+        $(document).ready(function () {
+            //$("#btnupdateorder").click(function () {
+
+            //});
+
+            $("#date").change(function () {
+                if (previousDate()) {
+                    document.getElementById("DateValidateMessage").innerHTML = "";
+                    document.getElementById("date").style.borderColor = "#dcdfe5";
+                }
+            });
+        });
+    </script>
+    <script>
+        //Delete Code
+        function DeleteMultipleRow() {
+            var grid = $('#categoryGrid').data('kendoGrid');
+            var rows = grid.select();
+            var ids = [];
+            var i = 0;
+            rows.each(function (e) {
+                ids[i] = grid.dataItem(this).OrderId;
+                i++;
+                //SelectRows.push(id);
+            });
+            if (i == 0) {
+                alert_popup("select atleast one items")
+                setTimeout(function () {
+                    document.getElementById("alert-box").style.display = "none";
+                }, 3000);
+            }
+            else {
+                $("#deletePopup").data("kendoWindow").center().open();
+                $("#btnYesResponse").click(function () {
+                    // console.log(ids);
+                    deleteorder(ids);
+                });
+                $("#btnNoResponse").click(function () {
+                    $("#deletePopup").data("kendoWindow").close();
+                    //window.location.reload();
+
+                });
+
+            }
+            //console.log(ids);
+        }
+
+        //ajex call with javascript
+        function deleteorder(e) {
+            //for multiple delete
+
+            if (Array.isArray(e)) {
+                var status = false;
+                for (var i = 0; i < e.length; i++) {
+
+                    var settings = {
+                        "url": API_URL + "api/apiorder/" + e[i],
+                        "method": "DELETE",
+                        "timeout": 0,
+                        "headers": {
+                            "Content-Type": "application/json"
+                        },
+                        //"data": JSON.stringify(dataitem.id),
+                    };
+                    $.ajax(settings).done(function (response) {
+                        if (response) {
+                            logger("Order", "Delete")
+                            location.reload();
+                            $("#deletePopup").data("kendoWindow").close();
+                            //LoadVendor();
+                            success_popup('Delete Successfully !')
+                            setTimeout(function () {
+                                document.getElementById("success-box").style.display = "none";
+                            }, 2000);
+                            window.location.reload();
+                        }
+                        else {
+                            $("#deletePopup").data("kendoWindow").close();
+                            // LoadVendor();
+                            alert_popup("Can't Delete due to dependency!")
+                            setTimeout(function () {
+                                document.getElementById("alert-box").style.display = "none";
+                            }, 2000);
+                            window.location.reload();
+                        }
+                    });
+                }
+
+
+            }
+
+
+                //for single delete
+            else {
+
+                var grid = $("#categoryGrid").data("kendoGrid");
+                var row = e.select().closest("tr");
+                var dataitem = grid.dataItem(row);
+
+                $("#deletePopup").data("kendoWindow").center().open();
+                $("#btnYesResponse").click(function () {
+                    var settings = {
+                        "url": API_URL + "api/apiorder/" + dataitem.OrderId,
+                        "method": "DELETE",
+                        "timeout": 0,
+                        "headers": {
+                            "Content-Type": "application/json"
+                        },
+                        //"data": JSON.stringify(dataitem.id),
+                    };
+                    $.ajax(settings).done(function (response) {
+                        if (response) {
+                            location.reload();
+                            $("#deletePopup").data("kendoWindow").close();
+                            logger("Order", "Delete")
+                            success_popup('Delete Successfully !')
+                            setTimeout(function () {
+                                document.getElementById("success-box").style.display = "none";
+                                // LoadVendor();
+                                window.location.reload();
+                            }, 2000);
+
+
+
+                        }
+                        else {
+                            $("#deletePopup").data("kendoWindow").close();
+                            LoadVendor();
+                            alert_popup("Can't Delete due to dependency!")
+                            setTimeout(function () {
+                                document.getElementById("alert-box").style.display = "none";
+                            }, 2000);
+                        }
+                    });
+
+
+                });
+                $("#btnNoResponse").click(function () {
+
+                    $("#deletePopup").data("kendoWindow").close();
+                    window.location.reload();
+
+                });
+            }
+        }
+
+        $("#addcategory").kendoWindow({
+            animation: false,
+            width: '550px',
+            height: '150px',
+            visible: false,
+            draggable: false,
+            resizable: false,
+            title: "Order",
+            actions: [
+                "Close"
+            ],
+            modal: true,
+
+        }).data("kendoWindow");
+
+        $("#deletePopup").kendoWindow({
+
+            visible: false,
+            draggable: false,
+            resizable: false,
+            defaultFocus: false,
+            modal: true,
+        }).data("kendoWindow");
+
+        $('#deletePopup').parent().addClass('deletepoupwrapper');
+        $('#deletePopup').parent().addClass('k-window-titleless');    </script>
+
+</body>
+
+</html>

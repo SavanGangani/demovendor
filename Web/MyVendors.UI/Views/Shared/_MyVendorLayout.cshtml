@@ -1,0 +1,548 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!-- css -->
+    <link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/fonts.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/styleguide.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/core-pocket-responsive.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/kendo.Deeppurple.css" rel="stylesheet" />   
+    <link href="../../App_Themes/Default/css/core-pocket.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="~/App_Themes/Default/css/Notification-content/Notification-content.css" rel="stylesheet" />
+    <link href="~/App_Themes/Default/css/popup.css" rel="stylesheet" />
+
+    <!-- js -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="~/Scripts/Dashboard-script/ProfileActions.js"></script>
+    <script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+    <script src="~/Scripts/Dashboard-script/dashboard.js"></script>
+    <script src="~/Scripts/Dashboard-script/registration.js"></script>
+    <script src="~/JavaScript/Notification/notification_icon.js"></script>
+    <script src="~/Scripts/pop_up_message.js"></script>
+    <script>
+
+        var API_URL = "@System.Configuration.ConfigurationManager.AppSettings["APIBase"]";
+        var UI_URL =" @System.Configuration.ConfigurationManager.AppSettings["UIBase"]";
+    </script>
+    <script>
+        var tempImage;
+
+        var resetuserpass = {
+            create: function () {
+                oldpassword: "";
+                newpassword: "";
+                confirmpassword: "";
+
+                return resetuserpass;
+            }
+        }
+        @*$(document).ready(function () {
+            $("#btnSave").click(function (data) {
+                if(pswd())
+                {
+                    $(document).ready(function (){
+                        $("input").change(function()
+                        {
+                            document.getElementById("oldpasswordValidateMessage").innerHTML = "";
+                            document.getElementById("txtOldPassword").style.borderColor = "lightgrey";
+                            document.getElementById("copasswordValidateMessage").innerHTML = "";
+                            document.getElementById("txtNewPassword").style.borderColor = "lightgrey";
+                            document.getElementById("newpasswordValidateMessage").innerHTML = "";
+                            document.getElementById("txtConfirmPassword").style.borderColor = "lightgrey";
+                        });
+                    });
+
+                    var newuserpass = resetuserpass.create();
+                    newuserpass.oldpassword = $("#txtOldPassword").val();
+                    newuserpass.newpassword = $("#txtNewPassword").val();
+                    newuserpass.confirmpassword = $("#txtConfirmPassword").val();
+                    $.ajax({
+                        type: "Put",
+                        url: API_URL+"/api/Resetpassword/"+@ViewBag.id,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data:JSON.stringify(newuserpass),
+                        success: function (data) {
+
+                            if(data.responseText==0)
+                            {
+                                document.getElementById("oldpasswordValidateMessage").style.color = "red";
+                                document.getElementById("txtOldPassword").style.borderColor = "red";
+                                document.getElementById("oldpasswordValidateMessage").innerHTML="Current password doesn't match";
+                            }
+                            else
+                            {
+                                logger("Profile", "Change Password")
+                                window.location = "/Login/logout";
+                                //sessionStorage.clear();
+
+                            }
+                        },
+                        // End  Ajax success function
+
+                        failure: function (data) {
+                            console.log("There is an problem.");
+                        },
+                        // End Ajax failure function
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            console.log("Request failed，info：" + textStatus + "  " + errorThrown);
+                        }
+                        // End Ajax Error function
+                    });
+                    //}
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+            });
+        });*@
+
+        //Logger
+        function logger(page, operation) {
+            var Login = {
+                Email: page,
+                Password: operation
+            };
+
+            $.ajax({
+                sync: true,
+                type: 'POST',
+                url: '/Logger/post',
+                data: JSON.stringify(Login),
+                dataType: 'JSON',
+                contentType: 'application/json; charset=utf-8'
+            });
+
+        }
+
+        // input onchange evant
+
+
+        $(document).ready(function (){
+            $("#txtOldpasword").change(function(){
+                if(pswd())
+                {
+                    document.getElementById("txtOldpassword").style.borderColor = "lightgrey";
+                    document.getElementById("oldpasswordValidateMessage").innerHTML = "";
+                }
+            });
+        });
+
+
+        $(document).ready(function (){
+            $("#txtNewPassword").change(function(){
+                if(pswd())
+                {
+                    document.getElementById("txtNewPassword").style.borderColor = "lightgrey";
+                    document.getElementById("newpaswordValidateMessage").innerHTML = "";
+                }
+            });
+        });
+
+        $(document).ready(function (){
+            $("#txtConfirmPassword").change(function(){
+                if(pswd())
+                {
+                    document.getElementById("txtConfiemPassword").style.borderColor = "lightgrey";
+                    document.getElementById("copaswordValidateMessage").innerHTML = "";
+                }
+            });
+        });
+
+
+        $(document).ready(function (){
+            $("input").change(function(){
+                if(name())
+                {
+                    document.getElementById("txtfname").style.borderColor = "lightgrey";
+                    document.getElementById("txtlname").style.borderColor = "lightgrey";
+                    document.getElementById("lastNameValidateMessage").innerHTML = "";
+                    document.getElementById("firstNameValidateMessage").innerHTML = "";
+                    document.getElementById("txtmobile").style.borderColor = "lightgrey";
+                    document.getElementById("mobileValidateMessage").innerHTML = "";
+                }
+            });
+        });
+
+
+
+        $(document).ready(function () {
+            $("#btnLogout").click(function (data) {
+                sessionStorage.clear();
+                logger("LogOut", "LogOut")
+                window.Location("LogIn/LogIn");
+            });
+        });
+
+
+        function functionsuccess() {
+            document.getElementById("success-box").style.display = "block";
+
+            $("#close-success").click(function (event) { document.getElementById("success-box").style.display = "none"; })
+            id = "close-success"
+        }
+
+    </script>
+</head>
+<body>
+    <input type="hidden" id="userid" value="@ViewBag.id" />
+    <!-- BEGIN LOADER -->
+    <div id="load_screen" class="load-screen">
+        <div class="pre-loader">
+            <div class="loader-content">
+                <h5 class="text-primary">My Vendor</h5>
+                <button>
+                    <div class="spinner-border mr-2 align-self-center loader-sm "></div>
+                    <span>Loading...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!--  END LOADER -->
+    <!-- header -->
+    <header class="main-header">
+        <nav class="mt-navbar">
+            <div class="nav-left" id="dvLeftMenu" data-role="aratooltipv2">
+                <div class="logo-wrapper">
+                    <img src="~/logo/White_logo.png" />
+                </div>
+            </div>
+            <div class="nav-right">
+                <ul class="user-menu">
+                    @*<li class="support-mail-wrapper">
+                            <a href="javascript:void(0)" class="help">
+                                <span class="icon"><i class="icon-help"></i></span>
+                            </a>
+                        </li>*@
+                    <li class="notification-item item">
+                        <a href="javascript:void(0)">
+                            <span class="icon"><i class="icon-notification" id="noti"></i></span>
+                            <span class="counts" id="noticount"></span>
+                            <div class="noti-content">
+                                <div class="noti-top-arrow" id="arrow"></div>
+                                <ul id="notiContent">
+                                    <h5 style="color:gray;font-weight:bolder;text-align:center">Notifications</h5>
+                                    <hr style="margin-top:1px;margin-left: -25px;" />
+                                </ul>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="separator"></li>
+                    <li class="userprofile-item userprofile dropdown">
+                        <a href="javascript:void(0)">
+                            <span class="navuser-ellipse" id="lblemail1"></span>
+                            <span class="dw-icon"><i class="icon-arrow-down"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- #header -->
+    <!-- #navbar-->
+    <nav class="mt-navbar-pages">
+        <ul class="list-inline pages-menu">
+            <li id="Dashboard">@Html.ActionLink("Dashboard", "Dashboard", "Dashboard")</li>
+            <li class="dropdown" role="presentation">
+                <a role="menuitem" tabindex="0" onclick="return false;">Master<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li role="presentation" class="">
+                        @Html.ActionLink("Category", "Category", "Dashboard")
+                    </li>
+                    <li>
+                        @Html.ActionLink("Vendors", "VendorDetails", "Dashboard")
+                    </li>
+                </ul>
+                </li>
+            <li>
+                @Html.ActionLink("Order", "Order", "Order")
+            </li>
+            <li>@Html.ActionLink("Service","Service", "Order")</li>
+            <li class="dropdown" role="presentation">
+                <a role="menuitem" tabindex="0" onclick="return false;">Transaction<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li role="presentation" class="">
+                        @Html.ActionLink("Order", "OrderTransaction", "Dashboard")
+                    </li>
+                    <li>
+                        @Html.ActionLink("Service", "ServiceTransaction", "Dashboard")
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <!-- #navbar-->
+    <!-- user profile -->
+    <div class="userprofile-menu dropdown-menu">
+        <div class="usermenu-wrap">
+            <div class="main-up">
+                <div class="userprofile-content-wrapper">
+                    <div class="brief">
+                        <div class="profileLetterDiv img-circle"><span id="imguser"></span></div>
+                        <div class="ImgDiv img-circle" id="ViewDiv"><img id="ViewProfileImage" /></div>
+                    </div>
+                    <div class="a-box">
+                        <a id="settings">
+                            <i class="icon-setting"></i><span class="text-dark text-semibold">Settings</span>
+                        </a>
+                        <a href="/Login/Logout" class="bl-0">
+                            <i class="icon-logout text-danger"></i><span class="text-dark text-semibold" id="btnLogout">Logout</span>
+                        </a>
+                    </div>
+                    <div class="bottom-div">
+                        <div class="userprofile-info d-flex align-items-center" style="margin-top:15px;margin-left:15px;">
+                            <span class="userprofile-info-icon"><i class="icon-user"></i></span>
+                            <div class="flex-1 overflow-hidden font-semi-bold ml-15">
+                                <span class="text-muted d-block ellipsis mb-5">Username</span>
+                                <label class="text-dark d-block ellipsis fs-15" id="lbluname"></label>
+                            </div>
+                        </div>
+                        <div class="userprofile-info d-flex align-items-center" style="margin-top:15px;margin-left:15px;">
+                            <span class="userprofile-info-icon"><i class="icon-user"></i></span>
+                            <div class="flex-1 overflow-hidden font-semi-bold ml-15">
+                                <span class="text-muted d-block ellipsis mb-5">Full Name</span>
+                                <label class="text-dark d-block ellipsis fs-15" id="lblfullname"></label>
+                            </div>
+                        </div>
+                        <div class="userprofile-info d-flex align-items-center" style="margin-top:15px;margin-left:15px;">
+                            <span class="userprofile-info-icon"><i class="icon-email"></i></span>
+                            <div class="flex-1 overflow-hidden font-semi-bold ml-15">
+                                <span class="text-muted d-block ellipsis mb-5">Email</span>
+                                <label class="text-dark d-block ellipsis fs-15" id="lblemail"></label>
+                            </div>
+                        </div>
+                        <div class="userprofile-info d-flex align-items-center" style="margin-top:15px;margin-left:15px;">
+                            <span class="userprofile-info-icon"><i class="icon-mobile"></i></span>
+                            <div class="flex-1 overflow-hidden font-semi-bold ml-15">
+                                <span class="text-muted d-block ellipsis mb-5">Phone Number</span>
+                                <label class="text-dark d-block ellipsis fs-15" id="lblmobile"></label>
+                            </div>
+                        </div>
+                        @*<div class="userprofile-info d-flex align-items-center">
+                                <span class="userprofile-info-icon"><i class="icon-assign-role"></i></span>
+                                <div class="flex-1 overflow-hidden font-semi-bold ml-15">
+                                    <span class="text-muted d-block ellipsis mb-5">User Role</span>
+                                    <label class="text-dark d-block ellipsis fs-15" id="lbluserrole">Scrum</label>
+                                </div>
+                            </div>*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings">
+                <div class="head">
+                    <a class="back"><i class="icon-arrow-left"></i></a>
+                    <h3>Settings</h3>
+                </div>
+                <!-- tab strip -->
+                <div id="tabstrip" class="h100">
+                    <ul>
+                        <li class="k-state-active">
+                            Edit Profile
+                        </li>
+                        <li>
+                            Reset Password
+                        </li>
+                    </ul>
+                    <div>
+                        <div class="setting-footer">
+                            <a class="btn btn-trans close" id="btnCloseprofile">Close</a>
+                            <a class="btn btn-trans ml-0" id="btnResetprofile" onclick="resetEventProfile()">Reset</a>
+                            <a class="btn btn-primary" id="btnUpdateprofile" onclick="UpdateProfile()">Update</a>
+                        </div>
+                        <form class="edit-profile" method="post" enctype="multipart/form-data">
+                            <div class="brief">
+                                <div class="profileLetterDiv img-circle" id="LetterDiv"><span id="imguser1"></span></div>
+                                <div class="ImgDiv img-circle" id="EditDiv"><img id="EditProfileImage" style="display:none;" /></div>
+                                <span class="input-pic">
+                                    <input type="file" id="fileProfileImage" name="fileProfileImage" onchange="SetImage(event);" title="Change Photo">
+                                    <i class="icon-photo"></i>Change Photo
+                                </span>
+                                <a onclick="ResetProfile();"><i class="icon-delete"></i>Reset Photo</a>
+                            </div>
+                            <div class="edit-profile-details">
+                                <div class="form-group">
+                                    <label>User Name</label>
+                                    <input class="form-control" readonly type="text" value="" id="txtuname" />
+                                </div>
+                                <div class="form-group">
+                                    <div class="half">
+                                        <label>First Name</label>
+                                        <input class="form-control" type="text" value="" id="txtfname" />
+                                        <span id="firstNameValidateMessage"></span>
+                                    </div>
+                                    <div class="half">
+                                        <label>Last Name</label>
+                                        <input class="form-control" type="text" value="" id="txtlname" />
+                                        <span id="lastNameValidateMessage"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input class="form-control" type="email" readonly value="" id="txtemail" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input class="form-control" type="text" value="" id="txtmobile" />
+                                    <span id="mobileValidateMessage"></span>
+                                </div>
+                                @*<div class="form-group">
+                                        <label for="drop-list">User Role</label>
+                                        <select id="UserRoleDropdown" title="dropdown without search">
+                                            <option>Scrum</option>
+                                            <option>iAudit</option>
+                                            <option>CorPocket</option>
+                                        </select>
+                                    </div>*@
+                            </div>
+                        </form>
+                    </div>
+
+                    <div>
+                        <div id="resetPassword">
+                            <form class="edit-profile">
+                                <div class="edit-profile-details">
+                                    <div class="form-group">
+                                        <label>Current Password</label>
+                                        <input class="form-control" type="password" placeholder="Current Password" id="txtOldPassword" />
+                                        <span id="oldpasswordValidateMessage"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>New Password <i class="icon-info-unfill text-muted"></i> </label>
+                                        <input class="form-control" type="password" placeholder="New Password" id="txtNewPassword" />
+                                        <span id="newpasswordValidateMessage"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Confirm Password</label>
+                                        <input class="form-control" type="password" placeholder="Re-type New Password" id="txtConfirmPassword" />
+                                        <span id="copasswordValidateMessage"></span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="setting-footer">
+                            <a class="btn btn-trans close" id="btnClose">Close</a>
+
+                            <a class="btn btn-trans ml-0" id="btnReset" onclick="resetEvent()">Reset</a>
+
+                            <a class="btn btn-primary" id="btnSave">Save</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end user profile -->
+
+    <div class="notification-box success" id="success-box">
+        <div class="notification-alert success">
+            <div class="pull-left"><i class="icon-check" aria-hidden="false"></i></div>
+            <div class="pull-right" role="alert" aria-label="Success">
+                <h5>Success!</h5>
+                <p id="success-msg"></p>
+            </div>
+            <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-success"><i class="icon-cancel" aria-hidden="true"></i></a>
+        </div>
+    </div>
+
+    <div class="notification-box warning" id="alert-box">
+        <div class="notification-alert warning">
+            <div class="pull-left"><i class="icon-warning" aria-hidden="true"></i></div>
+            <div class="pull-right" role="alert" aria-label="warning">
+                <h5>warning!</h5>
+                <p id="alert-msg"></p>
+            </div>
+            <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-alert"><i class="icon-cancel" aria-hidden="true"></i></a>
+        </div>
+    </div>
+
+    <!-- main content -->
+    @*<div class="main-content">
+            <iframe id="iframe" style="height:100%; width:100%;" tabindex="0" @*src="dashboard-iframe.html"></iframe>
+        </div>*@
+    <!-- ##end main content -->
+    @*<!-- footer -->
+        <footer class="main-footer">
+            <div class="footer-wrap">
+                <div class="login-wrap">Login Time: <span>@DateTime.Now.Date</span></div>
+                <div class="version-wrap"><span>Casepoint v1.0.0.0</span></div>
+            </div>
+        </footer>
+        <!-- footer -->*@
+
+    <script type="text/x-kendo-template" id="thumnail_template">
+        <div class="thumbnail-item">
+            <div class="thumbnail-item-wrapper">
+                <span class="date">@DateTime.Now.Date</span>
+                <div class="thumb-img">
+                    <img src='../../App_Themes/Default/images/core-pocket/event.jpg' />
+                </div>
+                <div class="thumb-details">
+                    <p class="font-medium text-dark thumb-name">
+                        CP Annual</>
+                        <ul class="thum-list">
+                            <li class="text-muted item-list">
+                                <span class="icon"><i class="icon-map"></i></span>
+                                <span class="text">Akshay Nagar 1st block 1st crosss Banglore-560016</span>
+                            </li>
+                            <li class="text-muted item-list">
+                                <span class="icon"><i class="icon-clock"></i></span>
+                                <span class="text">@DateTime.Now.ToLocalTime()</span>
+                            </li>
+                        </ul>
+                        <div class="btn-group bt-1 pt-10 text-center">
+                            <a href="javascript:void(0)" class="btn btn-trans text-primary">More Details</a>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+
+    </script>
+    <script>
+    $(document).ready(function() {
+            $("#Dashboard").click(function () {
+                $("#Category").removeClass("active");
+                $("#SubCategory").removeClass("active");
+                $("#Vendors").removeClass("active");
+                $("#Dashboard").addClass("active");
+            });
+            $("#Category").click(function () {
+                $("#Dashboard").removeClass("active");
+                $("#SubCategory").removeClass("active");
+                $("#Vendors").removeClass("active");
+                $("#Category").addClass("active");
+            });
+            $("#SubCategory").click(function () {
+                $("#Dashboard").removeClass("active");
+                $("#Category").removeClass("active");
+                $("#Vendors").removeClass("active");
+                $("#SubCategory").addClass("active");
+            });
+            $("#Vendors").click(function () {
+                $("#Dashboard").removeClass("active");
+                $("#Category").removeClass("active");
+                $("#SubCategory").removeClass("active");
+                $("#Vendors").addClass("active");
+            });
+    });
+    </script>
+    <!-- scripts -->
+    <div class="main-content">
+        @RenderBody()
+    </div>
+</body>
+</html>

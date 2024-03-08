@@ -1,0 +1,49 @@
+﻿Operation   |	Page Name	|	      Date				|	         Error Message
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Login		|	Login		|	07/04/2022 12:00:00 AM	|	42703: column "c_username" of relation "t_log" does not exist
+
+Login		|	Login		|	07/04/2022 12:00:00 AM	|	Connection property has not been initialized.
+
+Login		|	Login		|	07/04/2022 12:00:00 AM	|	Connection property has not been initialized.
+
+Login		|	Login		|	07/04/2022 12:00:00 AM	|	Connection property has not been initialized.
+
+Login		|	Login		|	13-04-2022 00:00:00	|	An established connection was aborted by the software in your host machine
+
+Login		|	Login		|	13-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	14-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	18-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	18-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	18-04-2022 00:00:00	|	No such host is known
+
+Login		|	Login		|	21-04-2022 00:00:00	|	The operation has timed out.
+
+Login		|	Login		|	21-04-2022 00:00:00	|	An established connection was aborted by the software in your host machine
+
+Login		|	Login		|	21-04-2022 00:00:00	|	An established connection was aborted by the software in your host machine
+
+Login		|	Login		|	21-04-2022 00:00:00	|	No such host is known

@@ -1,0 +1,742 @@
+﻿@model MyVendors.BAL.Models.Modelvendoradd
+@{
+    ViewBag.Title = "VendorDetails";
+    Layout = "~/Views/Shared/_MyVendorLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!--meta tags-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Vendor Management</title>
+    <script src="~/Apicall/vendorapi.js"></script>
+    <link href="~/Content/drawer.css" rel="stylesheet" />
+    <script src="~/JavaScript/Validations/addvendor.js"></script>
+    <script src="~/JavaScript/Validations/updatevendor.js"></script>
+    <script src="~/JavaScript/Validations/invoice.js"></script>
+    <link href="~/App_Themes/Default/css/popup.css" rel="stylesheet" />
+    <script src="~/Scripts/pop_up_message.js"></script>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+    @*<link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />*@
+    @*<link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/fonts.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/styleguide.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/kendo.Deeppurple.css" rel="stylesheet" />*@
+    <!-- css -->
+    <link href="../../App_Themes/Default/css/core-pocket.css" rel="stylesheet" />
+        <link href="../../App_Themes/Default/css/core-pocket-responsive.css" rel="stylesheet" />
+    <style>
+        .left {
+            float: right;
+            width: 150px;
+            margin-right: -74px;
+            margin-top: 12px;
+            position: inherit;
+        }
+    </style>
+
+    <script>
+
+        var API_URL = "@System.Configuration.ConfigurationManager.AppSettings["APIBase"]";
+        var UI_URL =" @System.Configuration.ConfigurationManager.AppSettings["UIBase"]";
+    </script>
+</head>
+<body>
+
+    <div class="mt-container mt-container-fluid h100 pl-20 pr-20">
+        <section id="main_splitter" class="k-spliter h100">
+            <div class="center-pane h100 event-pane-wrapper">
+                <header class="grid-header">
+                    <h5 class="title text-primary display-block">Vendor</h5>
+                    <div class="searchbar d-flex align-items-center mb-0">
+                        <div class="input-search">
+                            <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                               data-role="aratooltipv2"></i>
+                            <input type="search" id="search" name="search" class="form-control k-textbox" placeholder="Search here..."
+                                   aria-label="Search" autocomplete="off">
+                        </div>
+                        <div class="action-div dropdown">
+                            <a class="btn btn-raised btn-primary btn-block action-btn" style="padding-top:10px">
+                                <i class="icon-action"></i><span>Action</span></span>
+                            </a>
+                            <ul class="dropdown-menu right">
+                                <li>
+                                    <a href="javascript:void(0)" id="addEventLink" onclick="openAddEventPopup()">
+                                        <i class="icon-plus"></i><span>
+                                            Add
+                                            Vendor
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a>
+                                        <i class="icon-delete text-danger"></i><span class="text-danger" onclick="DeleteMultipleRow()">Delete</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+
+
+                </header>
+                <div class="action-header d-flex mb-10">
+                    <div class="action-checkbox ml-10">
+                        <input type="checkbox" class="k-checkbox" id="checkAll101">
+
+                    </div>
+                </div>
+                <div class="view-wrapper">
+                    <div class="grid-wrapper h100" id="list_view_content">
+                        <div id="categoryGrid" class="mb-0"></div>
+                        <div id="nodata" class="mb-0" style="display:none">
+                            <h1 style="color:gray">No Data Found</h1>
+                        </div>
+                        <input type="hidden" id="id" />
+                        <div id="categoryGrid_pager" class="with-more-option">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+    <!--DELETE POPUP-->
+
+
+    <div id="deletePopup" style="display:none">
+        <p class="fs-20 font-medium text-center text-dark pb-20 mb-10 pt-20">Are you sure you want to delete this?</p>
+        <div class="text-center">
+            <button type="button" id="btnYesResponse" class="btn btn-raised k-button btn-danger" tabindex="0">Yes</button>
+            <button type="button" id="btnNoResponse" class="btn btn-raised k-button btn-trans" tabindex="0">No</button>
+        </div>
+    </div>
+
+    <!-- AddVendor Form start -->
+    <div id="addVendors" style="display: none;">
+        <form id="vendoradd" enctype="multipart/form-data" method="post">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Select Category<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <select id="ddcategory" multiple="multiple"></select>
+                                <input type="hidden" id="lblcategoryid" />
+                                <span id="entercatnameValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Select Sub Category<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <select id="multiselect" multiple="multiple"></select>
+                                <input type="hidden" id="lblsubcategoryid" />
+                                <span id="entersubcatnameValidateMessage"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Vendor Name<span class="text-danger">*</span> </label>
+                            <div class="form-group-content">
+                                <input type="text" class="k-textbox" placeholder="Enter Vendor Name Here" id="entervendorname" oninput="vendornamevalidate()" onchange="vendornamevalidate()">
+                                <span id="vendorNameValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Mobile Number<span class="text-danger">*</span> </label>
+                            <div class="form-group-content">
+                                <input type="text" id="txtmobileno" class="k-textbox" placeholder="Enter Mobile Number Here" oninput="mobilevendorvalidate()" onchange="mobilevendorvalidate()">
+                                <span id="mobileValidateMsg"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Email<span class="text-danger">*</span> </label>
+                            <div class="form-group-content">
+                                <input type="text" id="txtvemail" class="k-textbox" placeholder="Enter Email Here" oninput="emailvendorvalidate()" onchange="emailvendorvalidate()">
+                                <span id="emailIdValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Address <span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="txtaddress" class="k-textbox" placeholder="Address" oninput="addressvendorvalidate()" onchange="addressvendorvalidate()">
+                                <span id="addressValidateMessage"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Website </label>
+                            <div class="form-group-content">
+                                <input type="text" id="txtwebsite" class="k-textbox" placeholder="Website">
+                                <span id=""></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">GST Number<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="txtgstno" class="k-textbox" placeholder="Enter GST Number Here.." oninput="gstnovendorvalidate()" onchange="gstnovendorvalidate()">
+                                <span id="gstValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Account Holder Name<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="txtaholdername" class="k-textbox" placeholder="Enter Account Holder Name Here.." oninput="accountholdernamevalidate()" onchange="accountholdernamevalidate()">
+                                <span id="holderNameValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Account Number<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="txtaccountnumber" class="k-textbox" placeholder="Enter Account Number Here.." oninput="accountnovalidate()" onchange="accountnovalidate()">
+                                <span id="bankaccValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Bank Name<span class="text-danger">*</span> </label>
+                            <div class="form-group-content">
+                                <input type="text" id="txtbankname" class="k-textbox" placeholder="Enter Bank Name Here.." oninput="banknamevendorvalidate()" onchange="banknamevendorvalidate()">
+                                <span id="bankNameValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Bank IFSC Code<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="txtifsccode" class="k-textbox" placeholder="Enter Bank IFSC Code Here.." oninput="ifsccodevendorvalidate()" onchange="ifsccodevendorvalidate()">
+                                <span id="ifscValidateMesage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <inputbutton>
+                <input type="button" onclick="validateVendorForm()" id="btnaddvendor" name="submit " button class="btn btn-success" value="Save" style="float:right;height:38px;width:95px;margin-right: 20px" />
+                @*<input type="button" onclick="clear_data()" id="resetvendor" name="submit " button class="btn btn-success" value="Save" style="float:right;height:38px;width:95px;margin-right: 20px" />*@
+                <input type="button" id="resetvendor" button class="btn btn-trans"  value="Reset" style="float:right;height:38px;width:95px;margin-right: 20px" />
+
+            </inputbutton>
+
+        </form>
+
+    </div>
+
+
+    <!--Update vendor form-->
+    <div id="editvendor" style="display: none;">
+        <form action="#" enctype="multipart/form-data" method="post">
+            <input type="hidden" class="k-textbox" id="upVid">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Select Category<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <select id="upddcategory" multiple="multiple"></select>
+                                <input type="hidden" id="uplblcategoryid" />
+                                <span id="entercatnameValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Select Sub Category<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <select id="upmultiselect" multiple="multiple"></select>
+                                <input type="hidden" id="lblsubcategoryid" />
+                                <span id="entersubcatnameValidateMessage"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Vendor Name<span class="text-danger">*</span> </label>
+                            <div class="form-group-content">
+                                <input type="text" class="k-textbox" placeholder="Enter Vendor Name Here" id="upentervendorname" oninput="upvendornamevalidate()" onchange="upvendornamevalidate()">
+                                <span id="upvendorNameValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Mobile Number<span class="text-danger">*</span> </label>
+                            <div class="form-group-content">
+                                <input type="text" id="uptxtmobileno" class="k-textbox" placeholder="Enter Mobile Number Here" onchange="upmobilevendorvalidate()">
+                                <span id="upmobileValidateMessage"></span>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Email<span class="text-danger">*</span> </label>
+                            <div class="form-group-content">
+                                <input type="text" id="uptxtvemail" class="k-textbox" placeholder="Enter Email Here" onchange="upemailvendorvalidate()">
+                                <span id="upemailIdValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Address <span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="uptxtaddress" class="k-textbox" placeholder="Address" onchange="upaddressvendorvalidate()">
+                                <span id="upaddressValidateMessage"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Website </label>
+                            <div class="form-group-content">
+                                <input type="text" id="uptxtwebsite" class="k-textbox" placeholder="Website">
+                                <span id=""></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">GST Number<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="uptxtgstno" class="k-textbox" placeholder="Enter GST Number Here.." onchange="upgstnovendorvalidate()">
+                                <span id="upgstValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Account Holder Name<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="uptxtaholdername" class="k-textbox" placeholder="Enter Account Holder Name Here.." onchange="upaccountholdernamevalidate()">
+                                <span id="upholderNameValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Account Number<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="uptxtaccountnumber" class="k-textbox" placeholder="Enter Account Number Here.." onchange="upaccountnovalidate()">
+                                <span id="upbankaccValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Bank Name <span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="uptxtbankname" class="k-textbox" placeholder="Enter Bank Name Here.." onchange="upbanknamevendorvalidate()">
+                                <span id="upbankNameValidateMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="forminlinelabel" class="pointer-events-none">Bank IFSC Code<span class="text-danger">*</span></label>
+                            <div class="form-group-content">
+                                <input type="text" id="uptxtifsccode" class="k-textbox" placeholder="Enter Bank IFSC Code Here.." onchange="upifsccodevendorvalidate()">
+                                <span id="upifscValidateMesage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <inputbutton>
+                <input type="button" onclick="validateUpdateVendorForm()" id="btnaddvendor" name="submit " button class="btn btn-success" value="Update" style="float:right;height:38px;width:95px;margin-right: 20px" />
+            </inputbutton>
+
+        </form>
+
+    </div>
+
+
+    <!-- add category window -->
+    <!-- option menu -->
+    <ul id="popup" class="grid-options" style="display: none;">
+        <li class="goto">
+            <span class="text-muted">Go to page</span>
+            <span>
+                <input type="text" id="page_goto" class="form-control" />
+            </span>
+            <span class="text-muted">0</span>
+            <span class="text-muted">pages</span>
+        </li>
+        <li class="rpp">
+            <span class="text-muted">Record per page</span>
+            <select class="k-dropdown" id="pagerDropdown">
+                <option>5</option>
+                <option>10</option>
+                <option>15</option>
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+                <option>200</option>
+            </select>
+        </li>
+    </ul>
+
+
+
+</body>
+</html>
+
+<script>
+    //for delete code
+
+    function DeleteMultipleRow() {
+        var grid = $('#categoryGrid').data('kendoGrid');
+        var rows = grid.select();
+        var ids = [];
+        var i = 0;
+        rows.each(function (e) {
+            ids[i] = grid.dataItem(this).c_VendorId;
+            i++;
+            //SelectRows.push(id);
+        });
+        if (i == 0) {
+            alert_popup("select atleast one items")
+            setTimeout(function () {
+                document.getElementById("alert-box").style.display = "none";
+            }, 3000);
+        }
+        else {
+            $("#deletePopup").data("kendoWindow").center().open();
+            $("#btnYesResponse").click(function () {
+                debugger
+               // console.log(ids);
+                Delete(ids);
+            });
+            $("#btnNoResponse").click(function () {
+                $("#deletePopup").data("kendoWindow").close();
+                //window.location.reload();
+
+            });
+
+        }
+        console.log(ids);
+    }
+
+    //ajex call with javascript
+    function Delete(e) {
+        //for multiple delete
+        
+        if (Array.isArray(e)) {
+            var status = false;
+            for (var i = 0; i < e.length; i++) {
+
+                var settings = {
+                    "url": API_URL + "api/APIvendoradd/" + e[i],
+                    "method": "DELETE",
+                    "timeout": 0,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    //"data": JSON.stringify(dataitem.id),
+                };
+                $.ajax(settings).done(function (response) {
+                    if (response) {
+                        logger("Vendor", "Delete")
+                        $("#deletePopup").data("kendoWindow").close();
+                        LoadVendor();
+                        success_popup('Delete Successfully !')
+                        setTimeout(function () {
+                            document.getElementById("success-box").style.display = "none";
+                        }, 2000);
+                    }
+                    else {
+                        $("#deletePopup").data("kendoWindow").close();
+                        LoadVendor();
+                        alert_popup("Can't Delete !")
+                        setTimeout(function () {
+                            document.getElementById("alert-box").style.display = "none";
+                        }, 2000);
+                    }
+                });
+            }
+
+
+        }
+
+
+            //for single delete
+        else {
+            
+            var grid = $("#categoryGrid").data("kendoGrid");
+            var row = e.select().closest("tr");
+            var dataitem = grid.dataItem(row);
+
+            $("#deletePopup").data("kendoWindow").center().open();
+            $("#btnYesResponse").click(function () {
+                debugger
+                var settings = {
+                    "url": API_URL + "api/APIvendoradd/" + dataitem.c_VendorId,
+                    "method": "DELETE",
+                    "timeout": 0,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    //"data": JSON.stringify(dataitem.id),
+                };
+                $.ajax(settings).done(function (response) {
+                    if (response) {
+                        logger("Vendor", "Delete")
+                        $("#deletePopup").data("kendoWindow").close();
+                        LoadVendor();
+                        success_popup('Delete Successfully !')
+                        setTimeout(function () {
+                            document.getElementById("success-box").style.display = "none";
+                        }, 2000);
+                    }
+                    else {
+                        $("#deletePopup").data("kendoWindow").close();
+                        LoadVendor();
+                        alert_popup("Vendor can not delete due to depenedency!")
+                        setTimeout(function () {
+                            document.getElementById("alert-box").style.display = "none";
+                        }, 2000);
+                    }
+                });
+
+
+            });
+            $("#btnNoResponse").click(function () {
+
+                $("#deletePopup").data("kendoWindow").close();
+                window.location.reload();
+
+            });
+        }
+    }
+
+
+
+    //Popup kendo code
+
+    $("#deletePopup").kendoWindow({
+
+        visible: false,
+        draggable: false,
+        resizable: false,
+        defaultFocus: false,
+        modal: true,
+    }).data("kendoWindow");
+
+    $('#deletePopup').parent().addClass('deletepoupwrapper');
+    $('#deletePopup').parent().addClass('k-window-titleless');
+
+    var vendordata = {
+        create: function () {
+            c_VendorName: "";
+            c_Mobile: "";
+            c_Email: "";
+            c_Address: "";
+            c_Website: "";
+            c_BankName: "";
+            c_IFSCCode: "";
+            c_AccountNo: "";
+            c_AccountHolderName: "";
+
+            return vendordata;
+        }
+    };
+
+    $("#resetvendor").click(function () {
+        $("#ddcategory").data("kendoMultiSelect").value('');
+        $("#multiselect").data("kendoMultiSelect").value('');
+        $("#entervendorname").val('')
+        $("#txtmobileno").val('')
+        $("#txtvemail").val('')
+        $("#txtaddress").val('')
+        $("#txtwebsite").val('')
+        $("#txtgstno").val('')
+        $("#txtaholdername").val('')
+        $("#txtaccountnumber").val('')
+        $("#txtbankname").val('')
+        $("#txtifsccode").val('')
+    })
+
+
+    function Edit(e) {
+
+        var grid = $("#categoryGrid").data("kendoGrid");
+        var row = e.select().closest("tr");
+        var dataitem = grid.dataItem(row);
+
+        console.log(dataitem)
+
+        $("#editentervendorname").val(dataitem.c_VendorName);
+        $("#txtmobileno1").val(dataitem.c_Mobile);
+        $("#txtvemail1").val(dataitem.c_Email);
+        $("#txtaddress1").val(dataitem.c_Address);
+        $("#txtwebsite1").val(dataitem.c_Website);
+        $("#vendorid").val(dataitem.c_VendorId);
+
+        if(id==0)
+        {
+            window.location.reload();
+        }
+        else {
+
+            //editvendor()
+
+            OpenEditVendor();
+            var vdata = vendordata.create();
+            vdata.c_VendorName = $("#editentervendorname").val();
+            vdata.c_Mobile = $("#txtmobileno1").val();
+            vdata.c_Email = $("#txtvemail1").val();
+            vdata.c_Address = $("#txtaddress1").val();
+            vdata.c_Website = $("#txtwebsite1").val();
+        }
+    }
+
+    function editvendor() {
+
+
+        var vdata = vendordata.create();
+        vdata.c_VendorName = $("#editentervendorname").val();
+        vdata.c_Mobile = $("#txtmobileno1").val();
+        vdata.c_Email = $("#txtvemail1").val();
+        vdata.c_Address = $("#txtaddress1").val();
+        vdata.c_Website = $("#txtwebsite1").val();
+
+        console.log(vdata)
+
+
+        var id = $("#vendorid").val();
+
+        $.ajax({
+            async: true,
+            url: API_URL+'api/APIvendoradd/' + id,
+            type: 'PUT',
+            data: JSON.stringify(vdata),
+            dataType: 'JSON',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data) {
+                    window.location = '/Dashboard/VendorDetails'
+                }
+            }, error: function (error) {
+                console.log(error.Message);
+            }
+        });
+
+    }
+
+    $('#search').on('input', function () {
+        var q = $("#search").val();
+        var grid = $("#categoryGrid").data("kendoGrid");
+        grid.dataSource.query({
+            page: 1,
+            pageSize: 8,
+            filter: {
+                logic: "or",
+                filters: [
+                  { field: "c_CatName", operator: "contains", value: q },
+                  { field: "c_VendorName", operator: "contains", value: q },
+                  { field: "c_Mobile", operator: "contains", value: q },
+                  { field: "c_Email", operator: "contains", value: q },
+                  { field: "c_Address", operator: "contains", value: q },
+                  { field: "c_Website", operator: "contains", value: q },
+                  { field: "c_GstNo", operator: "contains", value: q },
+                ]
+            }
+        });
+    });
+</script>
+
+
+
+
+
+

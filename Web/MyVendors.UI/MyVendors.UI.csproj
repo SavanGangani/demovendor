@@ -1,0 +1,549 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{19B43969-26E1-4E53-9602-CE2544A1D3E0}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MyVendors.UI</RootNamespace>
+    <AssemblyName>MyVendors.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\..\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.3, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\iTextSharp.5.5.13.3\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Npgsql, Version=4.0.11.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Npgsql.4.0.11\lib\net451\Npgsql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RabbitMQ.Client, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RabbitMQ.Client.4.1.3\lib\net451\RabbitMQ.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Common, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ServiceStack.Common.5.13.0\lib\net45\ServiceStack.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ServiceStack.Interfaces.5.13.0\lib\net45\ServiceStack.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Redis, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ServiceStack.Redis.5.13.0\lib\net45\ServiceStack.Redis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Text, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ServiceStack.Text.5.13.0\lib\net45\ServiceStack.Text.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Buffers.4.5.1\lib\netstandard1.1\System.Buffers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Memory.4.5.4\lib\netstandard1.1\System.Memory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.Cors.5.2.7\lib\net45\System.Web.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Cors.5.2.7\lib\net45\System.Web.Http.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages">
+      <HintPath>..\..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages.Deployment">
+      <HintPath>..\..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages.Razor">
+      <HintPath>..\..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers">
+      <HintPath>..\..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Apicall\vendorapi.js" />
+    <Content Include="App_Themes\Default\css\casepoint.comfortable.css" />
+    <Content Include="App_Themes\Default\css\casepoint.compact.css" />
+    <Content Include="App_Themes\Default\css\casepoint.cozy.css" />
+    <Content Include="App_Themes\Default\css\compliance.Aqua.css" />
+    <Content Include="App_Themes\Default\css\compliance.Black.css" />
+    <Content Include="App_Themes\Default\css\compliance.Brown.css" />
+    <Content Include="App_Themes\Default\css\compliance.Darkbrown.css" />
+    <Content Include="App_Themes\Default\css\compliance.Darkgray.css" />
+    <Content Include="App_Themes\Default\css\compliance.Darkteal.css" />
+    <Content Include="App_Themes\Default\css\compliance.Deepblue.css" />
+    <Content Include="App_Themes\Default\css\compliance.Deeppurple.css" />
+    <Content Include="App_Themes\Default\css\compliance.Grayishblue.css" />
+    <Content Include="App_Themes\Default\css\compliance.Green.css" />
+    <Content Include="App_Themes\Default\css\compliance.Indigo.css" />
+    <Content Include="App_Themes\Default\css\compliance.Lightaqua.css" />
+    <Content Include="App_Themes\Default\css\compliance.Lightblue.css" />
+    <Content Include="App_Themes\Default\css\compliance.Lightgreen.css" />
+    <Content Include="App_Themes\Default\css\compliance.Orange.css" />
+    <Content Include="App_Themes\Default\css\compliance.Pink.css" />
+    <Content Include="App_Themes\Default\css\compliance.Purple.css" />
+    <Content Include="App_Themes\Default\css\compliance.Raspberry.css" />
+    <Content Include="App_Themes\Default\css\compliance.Red.css" />
+    <Content Include="App_Themes\Default\css\compliance.Springgreen.css" />
+    <Content Include="App_Themes\Default\css\compliance.Teal.css" />
+    <Content Include="App_Themes\Default\css\compliance.Yellow.css" />
+    <Content Include="App_Themes\Default\css\core-pocket-responsive.css" />
+    <Content Include="App_Themes\Default\css\core-pocket.css" />
+    <Content Include="App_Themes\Default\css\Dashboard.css" />
+    <Content Include="App_Themes\Default\css\Dashboard1.css" />
+    <Content Include="App_Themes\Default\css\fonts.css" />
+    <Content Include="App_Themes\Default\css\fonts\glyphs\KendoUIGlyphs.svg" />
+    <Content Include="App_Themes\Default\css\fonts\glyphs\WebComponentsIcons.svg" />
+    <Content Include="App_Themes\Default\css\iaudit_dashboard.css" />
+    <Content Include="App_Themes\Default\css\images\back.png" />
+    <Content Include="App_Themes\Default\css\images\check.svg" />
+    <Content Include="App_Themes\Default\css\images\checkbox.png" />
+    <Content Include="App_Themes\Default\css\images\drag-icon.png" />
+    <Content Include="App_Themes\Default\css\images\kendoui.svg" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\icons-navbar1.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\icon_more_option.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\oit.loading.gif" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-black.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Blue.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Bluedark.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Bluelight.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Green.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Greenlight.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Orangedark.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Orangelight.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Pink.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Purple.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Purpledark.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Purplelight.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Reddark.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Redlight.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Skyblue.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Teal.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-Teallight.png" />
+    <Content Include="App_Themes\Default\css\images\ViewerIcon\viewer-icon-yellow.png" />
+    <Content Include="App_Themes\Default\css\images\wp8_icons.png" />
+    <Content Include="App_Themes\Default\css\images\wp8_inverseicons.png" />
+    <Content Include="App_Themes\Default\css\jquery-ui\jquery-ui.css" />
+    <Content Include="App_Themes\Default\css\jquery-ui\jquery-ui.min.css" />
+    <Content Include="App_Themes\Default\css\kendo.Aqua.css" />
+    <Content Include="App_Themes\Default\css\kendo.Black.css" />
+    <Content Include="App_Themes\Default\css\kendo.blue.min.css" />
+    <Content Include="App_Themes\Default\css\kendo.brown.css" />
+    <Content Include="App_Themes\Default\css\kendo.common.min.css" />
+    <Content Include="App_Themes\Default\css\kendo.Dark Teal.css" />
+    <Content Include="App_Themes\Default\css\kendo.darkblue.css" />
+    <Content Include="App_Themes\Default\css\kendo.Darkbrown.css" />
+    <Content Include="App_Themes\Default\css\kendo.Darkgray.css" />
+    <Content Include="App_Themes\Default\css\kendo.Darkteal.css" />
+    <Content Include="App_Themes\Default\css\kendo.darkviolet.css" />
+    <Content Include="App_Themes\Default\css\kendo.Deepblue.css" />
+    <Content Include="App_Themes\Default\css\kendo.Deeppurple.css" />
+    <Content Include="App_Themes\Default\css\kendo.default.min.css" />
+    <Content Include="App_Themes\Default\css\kendo.default.mobile.min.css" />
+    <Content Include="App_Themes\Default\css\kendo.Grayishblue.css" />
+    <Content Include="App_Themes\Default\css\kendo.Green.css" />
+    <Content Include="App_Themes\Default\css\kendo.Indigo.css" />
+    <Content Include="App_Themes\Default\css\kendo.Light Orange.css" />
+    <Content Include="App_Themes\Default\css\kendo.Light Purple.css" />
+    <Content Include="App_Themes\Default\css\kendo.Lightaqua.css" />
+    <Content Include="App_Themes\Default\css\kendo.Lightblue.css" />
+    <Content Include="App_Themes\Default\css\kendo.lightbrown.css" />
+    <Content Include="App_Themes\Default\css\kendo.lightgreen.css" />
+    <Content Include="App_Themes\Default\css\kendo.Lightpink.css" />
+    <Content Include="App_Themes\Default\css\kendo.maroon.css" />
+    <Content Include="App_Themes\Default\css\kendo.officeblue.css" />
+    <Content Include="App_Themes\Default\css\kendo.olive.css" />
+    <Content Include="App_Themes\Default\css\kendo.Orange.css" />
+    <Content Include="App_Themes\Default\css\kendo.peacock.css" />
+    <Content Include="App_Themes\Default\css\kendo.Pink.css" />
+    <Content Include="App_Themes\Default\css\kendo.Purple.css" />
+    <Content Include="App_Themes\Default\css\kendo.Raspberry.css" />
+    <Content Include="App_Themes\Default\css\kendo.Red.css" />
+    <Content Include="App_Themes\Default\css\kendo.seablue.css" />
+    <Content Include="App_Themes\Default\css\kendo.Sky Blue.css" />
+    <Content Include="App_Themes\Default\css\kendo.Springgreen.css" />
+    <Content Include="App_Themes\Default\css\kendo.Teal.css" />
+    <Content Include="App_Themes\Default\css\kendo.violet.css" />
+    <Content Include="App_Themes\Default\css\kendo.Yellow.css" />
+    <Content Include="App_Themes\Default\css\login.css" />
+    <Content Include="App_Themes\Default\css\Notification-content\Notification-content.css" />
+    <Content Include="App_Themes\Default\css\OrderUpdate.css" />
+    <Content Include="App_Themes\Default\css\popup.css" />
+    <Content Include="App_Themes\Default\css\responsive.css" />
+    <Content Include="App_Themes\Default\css\Site.css" />
+    <Content Include="App_Themes\Default\css\styleguide.css" />
+    <Content Include="App_Themes\Default\css\textures\transparency.png" />
+    <Content Include="App_Themes\Default\css\textures\transtexture.png" />
+    <Content Include="App_Themes\Default\css\wescrum.css" />
+    <Content Include="App_Themes\Default\fonts\apphub-icon.svg" />
+    <Content Include="App_Themes\Default\fonts\Avenir-Bold.svg" />
+    <Content Include="App_Themes\Default\fonts\color-icomoon.svg" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Bold.svg" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-BoldItalic.svg" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Italic.svg" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Light.svg" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-LightItalic.svg" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Medium.svg" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-MediumItalic.svg" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Regular.svg" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-SemiBold.svg" />
+    <Content Include="App_Themes\Default\fonts\icomoon.svg" />
+    <Content Include="App_Themes\Default\images\Clarent_Logo.svg" />
+    <Content Include="App_Themes\Default\images\Clarent_White_Logo.svg" />
+    <Content Include="App_Themes\Default\images\core-pocket\event.jpg" />
+    <Content Include="App_Themes\Default\images\empty-record-arrow.svg" />
+    <Content Include="App_Themes\Default\images\error-shape.svg" />
+    <Content Include="App_Themes\Default\images\favicon.ico" />
+    <Content Include="App_Themes\Default\images\loader1.gif" />
+    <Content Include="App_Themes\Default\images\Login_BG.svg" />
+    <Content Include="App_Themes\Default\images\Login_Graphics.svg" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Site.css" />
+    <Content Include="ErrorManagementfile\Errormanag.txt" />
+    <Content Include="ErrorManagementfile\Logger.txt" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="HTML\CorPocket\category-iframe.html" />
+    <Content Include="HTML\CorPocket\category.html" />
+    <Content Include="HTML\CorPocket\dashboard.html" />
+    <Content Include="HTML\CorPocket\Forget Password_Email.html" />
+    <Content Include="HTML\CorPocket\login.html" />
+    <Content Include="HTML\CorPocket\register.html" />
+    <Content Include="HTML\CorPocket\Registration_Email.html" />
+    <Content Include="HTML\style-guide.html" />
+    <Content Include="HTML\Vendor.png" />
+    <Content Include="Image\checkbox-blank-line.png" />
+    <Content Include="Image\checkbox-line.png" />
+    <Content Include="Image\datanotfound.png" />
+    <Content Include="Image\Logo\my vendor.png" />
+    <Content Include="Image\Vendor.png" />
+    <Content Include="JavaScript\Dashboard\Dashboard.js" />
+    <Content Include="JavaScript\Dashboard\Transactionorder.js" />
+    <Content Include="JavaScript\ForgetPassword\ForgetPassword.js" />
+    <Content Include="JavaScript\LogIn\LogIn.js" />
+    <Content Include="JavaScript\LogIn\Login_Forgate.js" />
+    <Content Include="JavaScript\Notification\notification_icon.js" />
+    <Content Include="JavaScript\Order\Order.js" />
+    <Content Include="JavaScript\Registration\Registration.js" />
+    <Content Include="JavaScript\SubCategory\SubCategory.js" />
+    <Content Include="JavaScript\Validations\addvendor.js" />
+    <Content Include="JavaScript\Validations\invoice.js" />
+    <Content Include="JavaScript\Validations\updatevendor.js" />
+    <Content Include="logo\my vendor.png" />
+    <Content Include="logo\White_logo.png" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\CLARENT\Other\Custom\clarant-custom.js" />
+    <Content Include="Scripts\CLARENT\Other\Custom\Custom.js" />
+    <Content Include="Scripts\CLARENT\Other\Custom\jquery-ui.js" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\Dashboard-script\category.js" />
+    <Content Include="Scripts\Dashboard-script\dashboard.js" />
+    <Content Include="Scripts\Dashboard-script\Dashboardjs.js" />
+    <Content Include="Scripts\Dashboard-script\Edituser.js" />
+    <Content Include="Scripts\Dashboard-script\ProfileActions.js" />
+    <Content Include="Scripts\Dashboard-script\registration.js" />
+    <Content Include="Scripts\Dashboard-script\subcategory_validation.js" />
+    <Content Include="Scripts\Dashboard-script\Transaction.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\Kendo\jquery.mCustomScrollbar.concat.min.js" />
+    <Content Include="Scripts\Kendo\jquery.min.js" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <None Include="Scripts\Kendo\kendo.all-vsdoc.js" />
+    <Content Include="Scripts\Kendo\kendo.all.min.js" />
+    <Content Include="Scripts\Kendo\kendo.web.min.js" />
+    <None Include="Scripts\Kendo\kendoARA.all-vsdoc.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\pop_up_message.js" />
+    <Content Include="Scripts\Vendor\vendordata.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Authantication\AuthAttribute.cs" />
+    <Compile Include="Controllers\AprovalController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\LoggerController.cs" />
+    <Compile Include="Controllers\LogInController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\RegistrationController.cs" />
+    <Compile Include="Controllers\UserProfileController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\web.config" />
+    <Content Include="packages.config" />
+    <Content Include="App_Themes\Default\css\fonts\glyphs\KendoUIGlyphs.eot" />
+    <Content Include="App_Themes\Default\css\fonts\glyphs\KendoUIGlyphs.ttf" />
+    <Content Include="App_Themes\Default\css\fonts\glyphs\KendoUIGlyphs.woff" />
+    <Content Include="App_Themes\Default\css\fonts\glyphs\WebComponentsIcons.eot" />
+    <Content Include="App_Themes\Default\css\fonts\glyphs\WebComponentsIcons.ttf" />
+    <Content Include="App_Themes\Default\css\fonts\glyphs\WebComponentsIcons.woff" />
+    <Content Include="App_Themes\Default\css\images\kendoui.ttf" />
+    <Content Include="App_Themes\Default\css\images\kendoui.woff" />
+    <Content Include="App_Themes\Default\fonts\apphub-icon.eot" />
+    <Content Include="App_Themes\Default\fonts\apphub-icon.ttf" />
+    <Content Include="App_Themes\Default\fonts\apphub-icon.woff" />
+    <Content Include="App_Themes\Default\fonts\Avenir-Bold.eot" />
+    <Content Include="App_Themes\Default\fonts\Avenir-Bold.otf" />
+    <Content Include="App_Themes\Default\fonts\Avenir-Bold.ttf" />
+    <Content Include="App_Themes\Default\fonts\Avenir-Bold.woff" />
+    <Content Include="App_Themes\Default\fonts\color-icomoon.ttf" />
+    <Content Include="App_Themes\Default\fonts\color-icomoon.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Bold.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Bold.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Bold.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Bold.woff2" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-BoldItalic.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-BoldItalic.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-BoldItalic.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-BoldItalic.woff2" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Italic.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Italic.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Italic.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Italic.woff2" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Light.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Light.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Light.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Light.woff2" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-LightItalic.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-LightItalic.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-LightItalic.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-LightItalic.woff2" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Medium.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Medium.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Medium.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Medium.woff2" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-MediumItalic.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-MediumItalic.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-MediumItalic.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-MediumItalic.woff2" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Regular.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Regular.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Regular.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-Regular.woff2" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-SemiBold.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-SemiBold.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-SemiBold.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-SemiBold.woff2" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-SemiBoldItalic.eot" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-SemiBoldItalic.ttf" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-SemiBoldItalic.woff" />
+    <Content Include="App_Themes\Default\fonts\HKGrotesk-SemiBoldItalic.woff2" />
+    <Content Include="App_Themes\Default\fonts\icomoon.eot" />
+    <Content Include="App_Themes\Default\fonts\icomoon.ttf" />
+    <Content Include="App_Themes\Default\fonts\icomoon.woff" />
+    <Content Include="App_Themes\Default\fonts\Lato-Black.eot" />
+    <Content Include="App_Themes\Default\fonts\Lato-Black.ttf" />
+    <Content Include="App_Themes\Default\fonts\Lato-Black.woff" />
+    <Content Include="App_Themes\Default\fonts\Lato-Bold.eot" />
+    <Content Include="App_Themes\Default\fonts\Lato-Bold.ttf" />
+    <Content Include="App_Themes\Default\fonts\Lato-Bold.woff" />
+    <Content Include="App_Themes\Default\fonts\Lato-Light.eot" />
+    <Content Include="App_Themes\Default\fonts\Lato-Light.ttf" />
+    <Content Include="App_Themes\Default\fonts\Lato-Light.woff" />
+    <Content Include="App_Themes\Default\fonts\Lato-Regular.eot" />
+    <Content Include="App_Themes\Default\fonts\Lato-Regular.ttf" />
+    <Content Include="App_Themes\Default\fonts\Lato-Regular.woff" />
+    <Content Include="Scripts\Kendo\jquery.min.map" />
+    <Content Include="Scripts\Kendo\kendo.all.min.js.map" />
+    <Content Include="Views\Shared\_MyVendorLayout.cshtml" />
+    <Content Include="Views\LogIn\LogIn.cshtml" />
+    <Content Include="Views\Registration\RegView.cshtml" />
+    <Content Include="Views\LogIn\ForgotReset.cshtml" />
+    <Content Include="Views\Dashboard\Dashboard.cshtml" />
+    <Content Include="Views\Dashboard\Events.cshtml" />
+    <Content Include="Views\Dashboard\Category.cshtml" />
+    <Content Include="Views\Dashboard\VendorDetails.cshtml" />
+    <Content Include="Views\Dashboard\SubCategory.cshtml" />
+    <Content Include="Views\Shared\_MyVendorLayoutTest.cshtml" />
+    <Content Include="Views\Order\Order.cshtml" />
+    <Content Include="Views\Order\Service.cshtml" />
+    <Content Include="Views\Dashboard\OrderTransaction.cshtml" />
+    <Content Include="Views\Dashboard\ServiceTransaction.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Browsers\" />
+    <Folder Include="App_Data\" />
+    <Folder Include="Models\" />
+    <Folder Include="Views\Approval\" />
+    <Folder Include="Views\Aproval\" />
+    <Folder Include="Views\Invoicedata\" />
+    <Folder Include="Views\Logger\" />
+    <Folder Include="Views\Reset\" />
+    <Folder Include="Views\SubCategories\" />
+    <Folder Include="Views\UserProfile\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MyVendors.BAL\MyVendors.BAL\MyVendors.BAL.csproj">
+      <Project>{56ca12ef-da10-43ca-8d61-31b7e6393213}</Project>
+      <Name>MyVendors.BAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyVendors.API\MyVendors.API.csproj">
+      <Project>{75deafec-a61a-4ebb-9b95-8ebfc13a4f90}</Project>
+      <Name>MyVendors.API</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>55006</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:55006/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

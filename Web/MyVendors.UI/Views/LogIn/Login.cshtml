@@ -1,0 +1,272 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>MyVendor</title>
+    <!--meta tags-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Clarent Institute Login</title>
+    <!-- favicon -->
+    <!--<link rel="shortcut icon" href="../../App_Themes/Default/images/favicon.ico" type="image/x-icon">-->
+    <link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/fonts.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/styleguide.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/responsive.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/kendo.Yellow.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/login.css" rel="stylesheet" />
+    <script src="~/JavaScript/LogIn/Login_Forgate.js"></script>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="~/JavaScript/LogIn/LogIn.js"></script>
+    @*<script src="~/JavaScript/ForgetPassword/ForgetPassword.js"></script>*@
+    <link href="~/App_Themes/Default/css/popup.css" rel="stylesheet" />
+    <script>
+
+        var API_URL = "@System.Configuration.ConfigurationManager.AppSettings["APIBase"]";
+        var UI_URL =" @System.Configuration.ConfigurationManager.AppSettings["UIBase"]";
+    </script>
+    <script>
+
+
+      $(document).ready(function () {
+          CheckRemember();
+      });
+
+      function CheckRemember() {
+          $('#emailId').val("@ViewBag.email");
+          $('#password').val("@ViewBag.password");
+          if ("@ViewBag.rememeberme" == "True" ) {
+              $('#rememeberme').attr('checked', 'checked');
+          }
+      };
+
+      function Login() {
+          var Login = {
+              Email: $('#emailId').val(),
+              Password: $('#password').val(),
+              RememberMe: $('#rememeberme').val()
+          };
+          $.ajax({
+              sync: true,
+              type: 'POST',
+              url: '/LoginApi/LogIn',
+              data: JSON.stringify(Login),
+              dataType: 'JSON',
+              contentType: 'application/json; charset=utf-8',
+              success: function (response) {
+                  if (response.Success) {
+                      logger("Login", "Login")
+                      $("#submit").attr('value', 'Please Wait...');
+                     window.location.replace("/Dashboard/Dashboard");
+                  }
+                  else if (response.Message ==  "Email Not Exits !!") {
+                      functionalert_user()
+                  }
+                  else {
+                      document.getElementById("passwordValidateMessage").style.color = "red";
+                      document.getElementById("password").style.borderColor = "red";
+                      document.getElementById("passwordValidateMessage").innerHTML = "Invalid credentials";
+                  }
+              }, error: function (error) {
+                  console.log(error.Message)
+              }
+          });
+      }
+
+      function logger(page, operation) {
+          var Login = {
+              Email: page,
+              Password: operation
+          };
+
+          $.ajax({
+              sync: true,
+              type: 'POST',
+              url: '/Logger/post',
+              data: JSON.stringify(Login),
+              dataType: 'JSON',
+              contentType: 'application/json; charset=utf-8'
+          });
+
+      }
+
+
+      $(document).ready(function () {
+          $("#forgotpassword").click(function (e) {
+              e.preventDefault();
+              if (email()) {
+                  $("#ForgotPasswordWindow").kendoWindow({
+                      width: 450,
+                      title: "Forgot Password",
+                      visible: false,
+                      draggable: false,
+                      resizable: false,
+                      actions: [
+                          "Close"
+                      ],
+                      modal: true
+                  }).data("kendoWindow");
+
+                  $(document).on('click', '#forgotpassword', function () {
+                      $("#ForgotPasswordWindow").data("kendoWindow").center().open();
+                  });
+              }
+
+          });
+      });
+
+
+
+    </script>
+
+</head>
+<body>
+    <div class="login-bg-wrapper d-flex flex-column">
+        <div class="login-logo-header d-flex align-items-center">
+            <a href="#" class="login-logo-wrapper">
+                <img src="../../logo/my vendor.png"
+                     class="login-logo-img" alt="Clarent Institute" />
+            </a>
+            @*<span class="separator"></span>
+                <span class="login-branh-text"><a>Vendor Management System</a></span>*@
+        </div>
+        <div class="login-graphic-wrapper flex-1 overflow-auto d-flex flex-wrap">
+            <div class="login-left-wrapper">
+                <div>
+                    <img src="~/Image/Vendor.png" alt="Clarent Institute"
+                         class="login-graphice-img" />
+                </div>
+            </div>
+            <form action="" method="post">
+                <div class="login-right-wrapper">
+                    <div class="loginpage-box-wrapper">
+                        <h2 class="login-title text-dark font-bold">Sign In</h2>
+                        <div class="loginpage-box-content">
+                            <div class="form-group">
+                                <input type="Email" class="k-textbox login-textbox" placeholder="Email" id="emailId" onchange="return email()">
+                                <span class="login-textbox-icon"><i class="icon-email"></i></span>
+                                <span id="emailIdValidateMessage"></span>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="k-textbox login-textbox" placeholder="Password" id="password" oninput="pswd()" onchange="return pswd()">
+                                <span class="login-textbox-icon"><i class="icon-locked"></i></span>
+                                <span style="position:relative" id="passwordValidateMessage"></span>
+                                <span id="ErrorMessage"></span>
+
+                            </div>
+                            <div class="login-input-check">
+                                <div class="login-input-checkbox">
+                                    <input type='checkbox' class='k-checkbox' value="false" id='rememeberme' onchange="return rememberme()">
+                                    <label class='k-checkbox-label' for='rememeberme'>Remember me</label>
+                                </div>
+                                <div class="login-input-checkbox">
+                                    <input type='checkbox' class='k-checkbox' id='acceptTs' disabled checked @*onchange="document.getElementById('submit').disabled = !this.checked;*@ ">
+                                    <label class='k-checkbox-label' for='acceptTs'>Accept end user License agreement</label>
+                                    <span id="checkValidateMessage"></span>
+                                </div>
+                            </div>
+                            <div class="form-group pb-10">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="button" value="Log In" id='submit' class="btn btn-primary k-button w100 loginbtn" onclick="validate()" />
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button class="forgot-pwd btn-link-trans font-medium text-dark outline-dark"
+                                        aria-label="Forgot password" id="forgotpassword">
+                                    Forgot Password?
+                                </button>
+                            </div>
+                            <div class="text-center">
+                                <span class="forgot-pwd btn-link-trans font-medium text-dark outline-dark">Not registred?</span>@Html.ActionLink("Sign Up", "RegView", "Registration")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="notification-box warning" id="alert-box">
+        <div class="notification-alert warning">
+            <div class="pull-left"><i class="icon-warning" aria-hidden="true"></i></div>
+            <div class="pull-right" role="alert" aria-label="warning">
+                @*<h5>warning!</h5>*@
+                <p>User already exists. Please try with another one.</p>
+            </div>
+            <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-alert"><i class="icon-cancel" aria-hidden="true"></i></a>
+        </div>
+    </div>
+
+    <div class="notification-box warning" id="alert-box-user">
+        <div class="notification-alert warning">
+            <div class="pull-left"><i class="icon-warning" aria-hidden="true"></i></div>
+            <div class="pull-right" role="alert" aria-label="warning">
+                @*<h5>warning!</h5>*@
+                <p>User not exists.</p>
+                <p>Please register the user first.</p>
+            </div>
+            <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-alert-user"><i class="icon-cancel" aria-hidden="true"></i></a>
+        </div>
+    </div>
+
+    <div class="notification-box success" id="success-box">
+        <div class="notification-alert success">
+            <div class="pull-left"><i class="icon-check" aria-hidden="false"></i></div>
+            <div class="pull-right" role="alert" aria-label="Success">
+                <p>Link has been sent to register email for reset password.</p>
+            </div>
+            <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-success"><i class="icon-cancel" aria-hidden="true"></i></a>
+        </div>
+    </div>
+
+    <div class="notification-box success" id="success-boxlogin">
+        <div class="notification-alert success">
+            <div class="pull-left"><i class="icon-check" aria-hidden="false"></i></div>
+            <div class="pull-right" role="alert" aria-label="Success">
+                <h5>Success!</h5>
+                <p>Login Successfully.</p>
+            </div>
+            <a href="javascript:void(0)" class="close btn-red-circle" aria-label="Close Notification" role="button" id="close-successlogin"><i class="icon-cancel" aria-hidden="true"></i></a>
+        </div>
+    </div>
+
+    <div class="forgotpassword-wrapper-window mt-login" id="ForgotPasswordWindow" style="display:none">
+        <div class="form-group mt-10">
+            <input type="text" class="mt-input" id="txtemailsend" readonly>
+            <span class="mt-bar"></span>
+
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary k-button w100 loginbtn" aria-label="Forgot password"
+                    id="forgotpasswordbtn" onclick="ExistEmail()">
+                Send Request
+            </button>
+        </div>
+    </div>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+
+    <script>
+        // Forgot password window js
+
+        //user is tabbing
+        function handleFirstTab(e) {
+            document.body.classList.add('user-is-tabbing');
+            document.removeEventListener('keyup', handleFirstTab);
+            document.addEventListener('mousedown', handleMouseDownOnce);
+        }
+
+        function handleMouseDownOnce() {
+            document.body.classList.remove('user-is-tabbing');
+            document.removeEventListener('mousedown', handleMouseDownOnce);
+            document.addEventListener('keyup', handleFirstTab);
+        }
+
+        window.addEventListener('keyup', handleFirstTab);
+    </script>
+
+</body>
+</html>

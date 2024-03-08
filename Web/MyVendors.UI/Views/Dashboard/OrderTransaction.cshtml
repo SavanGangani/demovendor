@@ -1,0 +1,1135 @@
+﻿@{
+    ViewBag.Title = "OrderTransaction";
+    Layout = "~/Views/Shared/_MyVendorLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--meta tags-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <title>Order Transaction</title>
+    <!-- favicon -->
+    <!--<link rel="shortcut icon" href="../../App_Themes/Default/images/favicon.ico" typea="image/x-icon">-->
+    <link href="~/App_Themes/Default/css/popup.css" rel="stylesheet" />
+    <script src="~/Scripts/pop_up_message.js"></script>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+    @*<link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />*@
+    @*<link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/fonts.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/styleguide.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />*@
+    @*<link href="~/App_Themes/Default/css/kendo.Deeppurple.css" rel="stylesheet" />*@
+
+    <!-- css -->
+    <link href="../../App_Themes/Default/css/core-pocket.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/core-pocket-responsive.css" rel="stylesheet" />
+
+    <!-- scripts -->
+    @*<script src="../../Scripts/Kendo/jquery.min.js"></script>*@
+    <script>
+        var API_URL = "@System.Configuration.ConfigurationManager.AppSettings["APIBase"]";
+        var UI_URL = "@System.Configuration.ConfigurationManager.AppSettings["UIBase"]";
+    </script>
+
+    <script src="~/Scripts/Dashboard-script/Transaction.js"></script>
+    <script src="~/JavaScript/Dashboard/Transactionorder.js"></script>
+    
+</head>
+
+<body>
+    <div class="mt-container mt-container-fluid h100 pl-20 pr-20">
+        <section id="main_splitter" class="k-spliter h100">
+            <div class="center-pane h100 event-pane-wrapper">
+                <header class="grid-header">
+                    <h5 class="title text-primary display-block">Order Transaction</h5>
+                    <div class="searchbar d-flex align-items-center mb-0">
+                        <div class="input-search">
+                            <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                               data-role="aratooltipv2"></i>
+                            <input type="text" name="search" class="form-control k-textbox" placeholder="Search here..." id="osearch"
+                                   aria-label="Search" autocomplete="off">
+                        </div>
+
+                        <div class="action-div dropdown">
+                            <a class="btn btn-raised btn-primary btn-block action-btn" style="padding-top:10px">
+                                <i class="icon-action"></i><span>Action</span></span>
+                            </a>
+                            <ul class="dropdown-menu right">
+                                <li>
+                                    <a href="javascript:void(0)" id="addEventLink" onclick="openOrderTransactionPopup();">
+                                        <i class="icon-plus"></i><span>
+                                            Order Transaction
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </header>
+                @*<div class="action-header d-flex mb-10">
+                        <div class="action-checkbox ml-10">
+                            <input type="checkbox" class="k-checkbox" id="checkAll101">
+                            <label class="k-checkbox-label" for="checkAll101">All</label>
+                        </div>
+                    </div>*@
+                <div class="view-wrapper">
+                    <div class="grid-wrapper h100" id="list_view_content">
+                        <div id="categoryGrid" class=""></div>
+                        <div id="categoryGrid_pager" class="with-more-option">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    @*----------------------------------------------------------------order popup----------------------------------------------------*@*
+
+    <div id="orderpopup" style="display: none;">
+
+        <div class="wrapper">
+            <div class="form-group">
+                <table align="left">
+                    <tr>
+                        <td> <label for="addCat">Transaction Date :<span class="text-danger">*</span></label>&nbsp &nbsp</td>
+                        <td><input type="date" class="form-control" id="addDate" oninput="selectdate()" onchange="selectdate()"></td>
+
+                    </tr>
+                </table><br /><br />
+                <span id="servicedatevalid"></span>
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="order Status">
+                    Vendor Name:<span class="text-danger">*</span>
+                </label>
+                <select id="OrderSelectVendorlist" onchange="OrderSelectVendor()"></select>
+                <span id="transelectvname"></span>
+            </div>
+            <input type="hidden" value="" />
+
+
+            <div class="form-group">
+                <label for="addCat">OrderId<span class="text-danger">*</span></label>
+                <select id="SelectOrderId" onchange="OrderId()"></select>
+                <span id="errormassaggeorderid"></span>
+            </div>
+            <div class="form-group">
+                <table class="table">
+                    <thead style="background: rgb(126, 87, 194);color:white;">
+
+                        <tr>
+                            <th>Item</th>
+                            <th>Qauntity Ordered</th>
+                            <th>Qauntity Recevied</th>
+                            <th>Price</th>
+                            <th>Total Price</th>
+
+                        </tr>
+                    </thead>
+                </table>
+                <table class="table" align="center" id="rowGen">
+                    <tbody style="max-height:30px;overflow-y:scroll;table-layout:fixed"></tbody>
+                </table>
+
+                <input type="text" id="forMultiplyFn" value="" hidden />
+            </div>
+
+            <div class="form-group">
+                <table align="left">
+                    <tr>
+                        <td> <label for="addCat">Total Item: </label>&nbsp</td>
+                        <td><input type="text" id="totalItemCount" class="form-control" value="" disabled /></td>
+                    </tr>
+                </table>
+
+                <table align="right">
+                    <tr>
+                        <td> <label for="addCat">Total Price: </label>&nbsp</td>
+                        <td><input type="text" id="totalPrice" class="form-control" value="" disabled /></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="form-group">
+                @*<div class="col-md-12">
+                    <div class="col-md-6">*@
+                        <label for="order Status">
+                            Delevery Status:
+                        </label>
+                        <select name="status" id="OrderStatus2">
+                            <option>--Select Status--</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Not Delivered">Not Delivered</option>
+                        </select>
+
+                    @*</div>*@
+                    @*<div class="col-md-6">
+                            <label for="addCat">Order Date :</label>
+                            <span id="transorderdate"></span>
+                        </div>*@
+                @*</div>*@
+
+            </div>
+
+            <div class="window-footer">
+                <button class="btn btn-primary" id="insertData" onclick="orderbtn()">Save</button>
+                @*<button class="btn btn-primary" id="" onclick="remove()">Reset</button>*@
+
+            </div>
+        </div>
+    </div>
+    @*---------------------------------------------------------End order Popup-------------------------------------------------------------*@
+    @*---------------------------------------------------------Edit order Popup-------------------------------------------------------------*@
+    <div id="openEditTransaction" style="display: none;">
+
+        <div class="wrapper">
+            <div class="form-group">
+                <table align="left">
+                    <tr>
+                        <td> <label for="addCat">Date :</label>&nbsp &nbsp</td>
+                        <td><input type="date" class="form-control" id="editDate" @*oninput="selectdate()" onchange="selectdate()*@ "></td>
+
+                    </tr>
+                </table><br /><br />
+                <span id="servicedatevalid"></span>
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="order Status">
+                    Vendor Name:
+                </label>
+                @*<input class="k-textbox login-textbox" type="text" id="OrderVendorlist" oninput="OrderSelectVendor()" onchange="OrderSelectVendor()" />*@
+                <select id="EditOrderSelectVendorlist"></select>
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="addCat">OrderId</label>
+                <select id="EditSelectOrderId" onchange=""></select>
+                <span id="errormassaggeorderid"></span>
+            </div>
+            <div class="form-group">
+                <table class="table">
+                    <thead style="background: rgb(126, 87, 194);color:white;">
+
+                        <tr>
+                            <th>Item</th>
+                            <th>Ordered Quntity</th>
+                            <th>Recevied Quantity</th>
+                            <th>Price</th>
+                            <th>Total Price</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tbody id="rowGen1"></tbody>
+                </table>
+
+                <input type="text" id="forMultiplyFnup" value="" hidden />
+            </div>
+
+            <div class="form-group">
+                <table align="left">
+                    <tr>
+                        <td> <label for="addCat">Total Item: </label>&nbsp</td>
+                        <td><input type="text" id="EdittotalItemCount" class="form-control" value="" disabled /></td>
+                    </tr>
+                </table>
+
+                <table align="right">
+                    <tr>
+                        <td> <label for="addCat">Total Price: </label>&nbsp</td>
+                        <td><input type="text" id="EdittotalPrice" class="form-control" value="" disabled /></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="form-group">
+                <label for="order Status">
+                    Delevery Status:
+                </label>
+                <select name="status" id="EditOrderStatus2">
+                    <option>--Select Status--</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Not Delivered">Not Delivered</option>
+                </select>
+            </div>
+
+            <div class="window-footer">
+                <button class="btn btn-primary" id="UpdateOrderData" onclick="Updateorderbtn()">Update</button>
+                <button class="btn btn-primary" id="" onclick="closeOrderTransactionPopup">Close</button>
+
+            </div>
+        </div>
+    </div>
+    @*---------------------------------------------------------End edit order Popup-------------------------------------------------------------*@
+
+    @*---------------------------------------------------------View order Popup-------------------------------------------------------------*@
+    <div id="vieworderdetailtran" style="display: none;">
+        <hr style="width:100%" />
+        <div class="col-lg-12">
+            <div class="col-lg-7">
+                <span id="viewvname" style="font-size:larger">Vendor Name&nbsp;&nbsp;&nbsp;&nbsp;:</span>
+                <span id="tname" style="font-size:larger"></span>
+                <br /><br />
+                <span id="OrderNo" style="font-size:medium">Transaction Number&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="tnumber" style="font-size:medium"></span>
+                <br /><br />
+                <span id="VendorEmail" style="font-size:medium">Vendor Email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="tmail" style="font-size:medium"></span>
+                <br /><br />
+                <span id="VendorNo" style="font-size:medium">Vendor Number&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="tno" style="font-size:medium"></span><br><br>
+
+            </div>
+        </div>
+        <div class="col-lg-12">
+
+            <table class="table" @*style="width:550px"*@>
+                <thead style="background:#efefef ;color:black;">
+                    <tr>
+                        <th scope="col">Items</th>
+                        <th scope="col">Quantity Ordered</th>
+                        <th scope="col">Quantity Recevied</th>
+                    </tr>
+                </thead>
+            </table>
+            <table class="table" align="center" id="VieworderTransaction" style="width:550px;max-height:30px;overflow-y:scroll;table-layout:fixed"></table>
+        </div>
+        <input type="hidden" id="ServiceId" />
+        <div class="form-group">
+            <label for="order Status">
+                Delevery Status:
+            </label>
+            <select id="ServiceOrderStatus"></select>
+        </div>
+        <div class="form-group">
+            <label for="order Status">
+                Payment Status:
+            </label>
+            <select id="PaymentStatus"></select>
+
+        </div>
+        <div class="window-footer dir-rtl">
+            <button class="btn btn-active" id="btnupdate" onclick="UpdateTransOrder()">Update</button>
+        </div>
+    </div>
+
+
+
+    @*--------------------------------------------------------- end View order Popup-------------------------------------------------------------*@
+
+
+    <!-- delete section confirmation Window -->
+
+    <div id="confirmDelete" style="display: none;">
+        <div class="window-wrapper">
+
+            <div class="form-group">
+                <label id="qDelPopup"></label>
+            </div>
+
+            <div class="window-footer dir-rtl">
+                <button class="btn btn-danger" id="delOkBtn">Ok</button>
+                <button class="btn btn-trans " onclick="closeDelEventPopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!-- option menu -->
+    <ul id="popup" class="grid-options" style="display: none;">
+        <li class="goto">
+            <span class="text-muted">Go to page</span>
+            <span>
+                <input type="text" id="page_goto" class="form-control" />
+            </span>
+            <span class="text-muted">0</span>
+            <span class="text-muted">pages</span>
+        </li>
+        <li class="rpp">
+            <span class="text-muted">Record per page</span>
+            <select class="k-dropdown" id="pagerDropdown">
+                <option>5</option>
+                <option>10</option>
+                <option>15</option>
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+                <option>200</option>
+            </select>
+        </li>
+    </ul>
+    <!-- option menu -->
+
+
+    <script>
+        //$("#addRadioGroup input[name='radioinline']:checked").
+        $(document).ready(function () {
+            // hide userprofile
+            $(document).click(function () {
+                //window.top.$('body').find('.userprofile-menu').removeClass('open');
+                //window.top.$('body').find('.userprofile').removeClass('active open');
+            });
+            console.log("yas");
+            console.log($("#addRadioGroup input[name='radioinline']:checked").val());
+            // common select dropdown
+            $("select:not([multiple])").kendoDropDownList();
+
+            //confirm delete section
+            $("#confirmDelete").kendoWindow({
+                animation: false,
+                width: '400px',
+                height: 'auto',
+                visible: false,
+                draggable: false,
+                resizable: false,
+                title: "Delete Section",
+                actions: [
+                    "Close"
+                ],
+                modal: true,
+
+            }).data("kendoWindow");
+            //orderpopup
+            $("#orderpopup").kendoWindow({
+                animation: false,
+                width: '600px',
+                height: '500px',
+                visible: false,
+                draggable: false,
+                resizable: false,
+                title: "Order",
+                actions: [
+                    "Close"
+                ],
+                modal: true,
+
+            }).data("kendoWindow");
+
+            $("#openEditTransaction").kendoWindow({
+                animation: false,
+                width: '600px',
+                height: '500px',
+                visible: false,
+                draggable: false,
+                resizable: false,
+                title: "Update Transaction",
+                actions: [
+                    "Close"
+                ],
+                modal: true,
+
+            }).data("kendoWindow");
+
+
+
+
+            $("#vieworderdetailtran").kendoWindow({
+                animation: false,
+                width: '700px',
+                height: '350px',
+                visible: false,
+                draggable: false,
+                resizable: false,
+                title: "Order Details",
+                actions: [
+                    "Close"
+                ],
+                modal: true,
+
+            }).data("kendoWindow");
+
+            $(".datetimepicker").kendoDateTimePicker({
+                value: new Date()
+            });
+
+        });
+
+        function openOrderTransactionPopup() {
+
+            $("#addDate").val('');
+            $("#OrderSelectVendorlist").data('kendoDropDownList').value('');
+            $("#SelectOrderId").data('kendoDropDownList').value('');
+            remove();
+
+            $("#rowGen").empty();
+
+            $("#orderpopup").data("kendoWindow").center().open();
+        }
+        function closeOrderTransactionPopup() {
+            $("#orderpopup").data("kendoWindow").close();
+        }
+        function openEditTransaction() {
+            $("#openEditTransaction").data("kendoWindow").center().open();
+        }
+        function openDelEventPopup() {
+            $("#confirmDelete").data("kendoWindow").center().open();
+        }
+        function closeDelEventPopup() {
+            $("#confirmDelete").data("kendoWindow").close();
+        }
+        function openUpdateTransactionPopup() {
+            $("#editTransaction").data("kendoWindow").center().open();
+        }
+
+        function OpenViewTransactionPopup()
+        {
+            $("#vieworderdetailtran").data("kendoWindow").center().open();
+        }
+    </script>
+
+    <script>
+                var date = new Date();
+                var tdate = date.getDate();
+                var month = date.getMonth() + 1;
+                if (tdate < 10) {
+                    tdate = '0' + tdate;
+                }
+                if (month < 10) {
+                    month = '0' + month;
+                }
+                var year = date.getUTCFullYear();
+                var minDate = year + "-" + month + "-" + tdate;
+                document.getElementById("addDate").setAttribute('min', minDate)
+    </script>
+
+
+    <script>
+        //dispaly grid
+        $(document).ready(function () {
+
+            $("select:not([multiple])").kendoDropDownList();
+
+            var gridData = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: API_URL + "api/TransactionAPI",
+                        dataType: "json"
+                    },
+                },
+                pageSize: 10,
+            });
+            $("#categoryGrid_pager").kendoPager({
+                dataSource: gridData,
+            });
+            gridData.read();
+
+            $('#osearch').on('input', function () {
+                var s = $("#osearch").val();
+                var grid = $("#categoryGrid").data("kendoGrid");
+                grid.dataSource.query({
+                    page: 1,
+                    pageSize: 10,
+                    filter: {
+                        logic: "or",
+                        filters: [
+                            { field: "vname", operator: "contains", value: s },
+                            { field: "orderId", operator: "contains", value: s },
+                            { field: "transactionData", operator: "contains", value: s },
+                            { field: "delivaryStatus", operator: "contains", value: s },
+                            { field: "TotalPrice", operator: "contains", value: s },
+                        ]
+                    }
+                });
+            });
+
+            //-----------------------------------------------------------------------------------------------------------------
+
+            $("#categoryGrid").kendoGrid({
+                dataSource: gridData,
+                totalRecordPerPage: 4,
+                resizable: true,
+                sortable: true,
+                pageable: false,
+                pageSize: 2,
+                persistSelection: true,
+                columns: [{ selectable: true, width: "40px" },
+                {
+                    template: "<div class='grid-action'><a class='text-muted' onclick='showtransdetails($(this))'><i class='icon-show'></i><a class='text-muted' onclick='Sendinvoice($(this))'><i class='icon-email' id='sendInvoice'></i></a></div>",   //<a class='text-muted' onclick='editordertrans($(this))'><i class='icon-edit1' id='edit'></i></a>
+                    field: "Action",
+                    title: "Action",
+                    width: 80
+                },
+                {
+                    field: "vname",
+                    title: "Vendor Name",
+                },
+                {
+                    field: "transactionDate",
+                    title: "Transaction Date",
+                    template: '#= kendo.toString(kendo.parseDate(transactionDate), "dd/MM/yyyy")#',
+                },
+                {
+                    field: "TotalPrice",
+                    title: "Total Amount",
+                    
+                },
+                {
+                    field: "delivaryStatus",
+                    title: "Delivary Status",
+                }
+                 ]
+            });
+
+            var popup = $("#popup").kendoPopup({
+                animation: false,
+                anchor: $("#moreOption"),
+                origin: "top right",
+                position: "bottom right",
+                collision: "fit",
+
+            }).data("kendoPopup");
+
+            $("#moreOption").click(function () {
+                $("#popup").data("kendoPopup").open()
+            });
+
+            $("#pagerDropdown").kendoDropDownList({
+                popup: {
+                    appendTo: 'body'
+                }
+            });
+        });
+    </script>
+
+    <!--Get Dropdown data-->
+    <!--Kendo dropdown with serach-->
+
+    <script>
+        //add vendor dropdown transation
+        $(document).ready(function () {
+            //$('#addQueForm')[0].reset();
+            var addData = {
+                transactionType: 'Order',
+            }
+            $.ajax({
+                url: API_URL + "api/VendorNameApi",
+                type: "POST",
+                data: addData,
+                success: function (response) {
+                    var orderData = response;
+                    //console.log(vendorData);
+                    $("#OrderSelectVendorlist").kendoDropDownList({
+                        placeholder: "--Select Vendor--",
+                        optionLabel: "--Select Vendor--",
+                        dataSource: orderData,
+
+                    })
+                },
+                error: function (error) {
+                    console.log("error :" + error);
+                }
+            });
+
+        });
+    </script>
+    <script>
+        //get id from vendor name selection
+        $(document).ready(function () {
+            $("#OrderSelectVendorlist").change(function (e) {
+                e.preventDefault();
+                //$('#addQueForm')[0].reset();
+                var addData = {
+                    vname: $("#OrderSelectVendorlist").val(),
+                    transactionType: 'Order',
+                }
+                $.ajax({
+                    url: API_URL + "api/GetOrderIdApi",
+                    type: "POST",
+                    data: addData,
+                    success: function (response) {
+                        //var orderData = response;
+                        //console.log(vendorData);
+                        $("#SelectOrderId").kendoDropDownList({
+                            placeholder: "--Select Order Id--",
+                            optionLabel: "--Select Order Id--",
+                            dataSource: response,
+                        })
+                    },
+                    error: function (error) {
+                        console.log("error :" + error);
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        //get items(subcategory name) from order
+        $(document).ready(function () {
+            $("#SelectOrderId").change(function (e) {
+                e.preventDefault();
+                //$('#addQueForm')[0].reset();
+                var BindTransactionOrder = '';
+                var addData = {
+                    orderId: $("#SelectOrderId").val(),
+                    transactionType: 'Order',
+                }
+                $.ajax({
+                    url: API_URL + "api/ItemDataTransactionApi",
+                    type: "POST",
+                    data: addData,
+                    success: function (data) {
+                        $("#rowGen").empty();
+                        console.log(data);
+                        for (let i = 0; i < data.length; i++) {
+                            BindTransactionOrder += '<tr><td>' +
+                                        '<span>' + data[i].subCategory + '</span></td>' +
+                                        '<td><input type="text" class="form-control" style="text-align:end;" value=' + data[i].itemQty + ' disabled></td>' +
+                                        '<td><input type="number" id="reciveditem'+i+'" class="form-control" min="0"  style="text-align:end;">' +
+                                        '<span id=""></span></td>' +
+                                        '<td><input type="text" id="itemPrice' +i + '" class="itemprice form-control" value="0" placeholder="Enter Price" onchange="multiply()" style="text-align:end"><span id=""></span></td>' +
+                                        '<td><input type="text" class="form-control" id="itemTotalPrice' +i + '" disabled /></td>' +
+                                     '</tr>';
+
+                        }
+                        $("#rowGen").append(BindTransactionOrder);
+                        $("#totalItemCount").val(data.length);
+                        $("#forMultiplyFn").val(data.length);
+                    },
+                    error: function (error) {
+                        console.log("error :" + error);
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        var recevieditem = [];
+        $(document).ready(function () {
+            $("#insertData").click(function (e) {
+                OrderArrayTrans();
+            });
+        });
+
+        function OrderArrayTrans() {
+
+
+            $("#rowGen tr").each(function () {
+                var receviedq;
+                var price;
+                this.cells[0].innerHTML
+                debugger
+                receviedq = $(this).closest('tr').find("input").eq(1).val()
+                price = $(this).closest('tr').find("input").eq(0).val()
+                itemqt = $(this).closest('tr').find("input").eq(0).val()
+                
+                var addData = {
+                    orderId: $("#SelectOrderId").val(),
+                    vname: $("#OrderSelectVendorlist").val(),
+                    vendorId: $("#OrderSelectVendorlist").val(),
+                    deliveryStatus: $("#OrderStatus2").val(),
+                    TotalPrice: $("#totalPrice").val(),
+                    transactionDate: $("#addDate").val(),
+                    ReceviedQauntity: receviedq
+                }
+                debugger
+                if (receviedq < 0  && price<0)
+                {
+                    recevieditem = []
+                    alert_popup('Please fill order details !')
+                    setTimeout(function () {
+                        document.getElementById("alert-box").style.display = "none";
+                    }, 2000)
+                }
+                else if (itemqt < receviedq)
+                {
+                    recevieditem = []
+                    alert_popup('Received item can not be more than placed order !')
+                    setTimeout(function () {
+                        document.getElementById("alert-box").style.display = "none";
+                    }, 2000)
+                }
+                else
+                {
+                    recevieditem.push(addData);
+                }
+            });
+
+            
+
+            if (recevieditem.length > 0)
+            {
+                InsertTransOrder(recevieditem)
+
+            }
+            else
+            {
+                alert_popup('Please fill order details !')
+                setTimeout(function () {
+                    document.getElementById("alert-box").style.display = "none";
+                }, 2000)
+            }
+        }
+        //insert data into database
+
+        function InsertTransOrder(recevieditem) {
+
+            $.ajax({
+                url: API_URL + "api/TransactionAPI",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(recevieditem),
+                type: 'POST',
+                success: function (response) {
+
+                    if (response) {
+                        success_popup('Transaction done successfully !')
+                        setTimeout(function () {
+                            document.getElementById("success-box").style.display = "none";
+                        }, 2000)
+                        window.location.reload();
+                    }
+                    else
+                    {
+                        alert_popup('Please fill order details !')
+                        setTimeout(function () {
+                            document.getElementById("alert-box").style.display = "none";
+                        }, 2000)
+                        window.location.reload();
+                    }
+                },
+                error: function (error) {
+                    console.log("error :" + error);
+                }
+            });
+        }
+
+    </script>
+    @*<script>*@
+    @*//delete single row from grid------------------------------------------------------------------
+
+            //function COnfirm Delete call
+            function resDel(e) {
+                document.getElementById('qDelPopup').innerHTML = "Are you sure you want to delete this transaction?";
+                openDelEventPopup();
+                $("#delOkBtn").click(function (c) {
+                    c.preventDefault();
+                    Delete(e);
+                    $("#confirmDelete").data("kendoWindow").close();
+                });
+
+            }
+
+            function Delete(e) {
+
+                console.warn("e which returns id" + e);
+                console.table(e);
+
+                var grid = $("#categoryGrid").data("kendoGrid");
+                console.warn("grid");
+                console.log(grid);
+
+                var row = e.select().closest("tr");
+                console.warn("row");
+                console.table(row);
+
+                var dataitem = grid.dataItem(row);
+                console.warn("dataitem");
+                console.table(dataitem);
+
+                var id = dataitem.TransactionId;
+                console.log(id);
+                // we want table
+                // ajax for deleting single entry
+                $.ajax({
+                    url: API_URL + "api/TransactionAPI",
+                    method: "delete",
+                    data: {
+                        TransactionId: id
+                    },
+                    success: function (data) {
+                        //document.getElementById('alert-msg-success').innerHTML = "Question Deleted Successfully.";
+
+                        console.log("success");
+                        functionsuccess();
+                        setTimeout(function () {
+                            location.reload(true);
+                        }, 1000);
+                    },
+
+                    error: function (err) {
+                        console.log(err);
+                    }
+
+                });
+            }
+        </script>
+        <script>
+            //update order transation
+
+            function editordertrans(e) {
+                //   ;
+                //Fetch Date From Grid
+                function formatDate(date) {
+                    var d = new Date(date),
+                        month = '' + (d.getMonth() + 1),
+                        day = '' + d.getDate(),
+                        year = d.getFullYear();
+
+                    if (month.length < 2)
+                        month = '0' + month;
+                    if (day.length < 2)
+                        day = '0' + day;
+
+                    return [year, month, day].join('-');
+                }
+
+
+                var Bindorder = '';
+                $('#rowGen1').empty();
+                openEditTransaction();
+                var grid = $("#categoryGrid").data("kendoGrid");
+                var row = e.select().closest("tr");
+                var dataitem = grid.dataItem(row);
+
+                $.ajax({
+                    sync: true,
+                    url: API_URL + "api/EditTransactionApi/" + dataitem.TransactionId,
+                    contentType: "application/json; charset=utf-8",
+                    //processData: false,
+                    type: 'GET',
+                    success: function (data) {
+
+                        console.log('Item data');
+                        console.log(data)
+                        document.getElementById('editDate').value = formatDate(dataitem.transactionDate);
+                        $("#EditOrderSelectVendorlist").data('kendoDropDownList').text(dataitem.vname);
+                        $("#EditSelectOrderId").data('kendoDropDownList').text(dataitem.orderId);
+
+                        document.getElementById('EdittotalPrice').value = dataitem.TotalPrice;
+                        if (data) {
+
+                            for (var i = 0; i < data.length; i++) {
+                                document.getElementById('EdittotalItemCount').value=data.length;
+
+                                Bindorder += '<tr><td><span id="subnamet-' + i + '">' + data[i].subCategory + '</span></td>' +
+                                                            '<td><input type="text" class="form-control" value="' + data[i].itemQty + '" style="width:80px;text-align:end;" id="qt" disabled></td>'+
+                                                            '<td><input type="number" min="0" class="form-control" value="' + data[i].ReceviedQauntity + '" style="width:80px;text-align:end;" id="qt' + i + '"></td>' +
+                                                            '<td><input type="hidden" min="0" value="' + data[i].SubCatId + '"></td>' +
+                                                            '</tr>';
+                            }
+                            $('#rowGen1').append(Bindorder); //tbluser -> table id 6
+                        }
+                    }
+
+                });
+
+
+            }
+
+
+
+
+
+            //Edit Order
+            var Updateorder = [];
+            function UpdateOrder() {
+                Updateorder = [];
+
+                $('#orderedit tr').each(function () {
+                    var item;
+                    var quntity;
+                    var SubName;
+                    var vname = $("#editvname").text();
+                    var upvemail = $("#upovemail").text()
+                    var upvno = $("#upovno").text()
+
+                    this.cells[0].innerHTML
+                    subName = $(this).closest('tr').find("span").eq(0).text();
+                    quntity = $(this).closest('tr').find("input").eq(0).val();
+                    item = $(this).closest('tr').find("input").eq(1).val()
+
+                    var data = {
+                        OrderId: $('#editid').val(),
+                        OrderDate: $('#date').val(),
+                        Quantity: quntity,
+                        VendorName: vname,
+                        SubCatId: item,
+                        SubCatName: subName,
+                        VendorEmail: upvemail,
+                        VendorNo: upvno
+                    }
+
+                    Updateorder.push(data);
+
+
+                });
+                //if (updateOrderValid()) {
+
+                UpdateOrderItems(Updateorder);
+                //}
+            }
+
+            function UpdateOrderItems(Updateorder) {
+                var settings = {
+
+                    "url": API_URL + "api/ApiOrder/",
+                    "method": "PUT",
+                    "timeout": 0,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "data": JSON.stringify(Updateorder),
+                };
+                $.ajax(settings).done(function (response) {
+                    if (response == 1) {
+                        success_popup('Order Update Successfully!')
+                        setTimeout(function () {
+                            document.getElementById("success-box").style.display = "none";
+                        }, 2000);
+                        // alert('update success');
+                        window.location.reload();
+                    }
+                });
+
+            }
+
+
+        </script>*@
+    
+    <script>
+
+        function showtransdetails(e)
+        {
+            $("#ServiceOrderStatus").kendoDropDownList({
+                dataSource: [{ text: "Delivered", value: "delivered" }, { text: "Not Delivered", value: "not delivered" }],
+                dataTextField: "text",
+                dataValueField: "value",
+                //optionLabel: "Select Category Name",
+                //change: widgetChange,
+                //select: onchange
+            }).data('kendoDropDownList');
+
+            $("#PaymentStatus").kendoDropDownList({
+                dataSource: [{ text: "Pending", value: "Pending " }, { text: "Complete", value: "Done" }],
+                dataTextField: "text",
+                dataValueField: "value",
+                //optionLabel: "Select Category Name",
+                //change: widgetChange,
+                //select: onchange
+            }).data('kendoDropDownList');
+
+
+            $("#vieworderdetailtran").data("kendoWindow").center().open();
+
+
+            var grid = $("#categoryGrid").data("kendoGrid");
+            var row = e.select().closest("tr");
+            var dataitem = grid.dataItem(row);
+                var BindView = '';
+                $('#VieworderTransaction').empty();
+                //OpenViewTransactionPopup();
+                $.ajax({
+                    url: API_URL + "api/APIOrderViewDetails/" + dataitem.TransactionId,
+                    method: "GET",
+                    success: function (data) {
+                        if (data) {
+
+                            $("#tnumber").text(dataitem.TransactionId)
+
+                            $("#tname").text(dataitem.vname)
+                            //$('#ServiceOrderStatus').val("2");
+                            //$('#PaymentStatus').val("Delivered");
+
+                            for(var i=0;i<data.length;i++)
+                            {
+                                var qt = parseInt(data[i].itemQty);
+                                var rqt = parseInt(data[i].ReceviedQauntity);
+                                $("#tmail").text(data[i].VendorEmail)
+                                $("#tno").text(data[i].VendorMobileNo)
+                                BindView += '<tr><td><span>' + data[i].subCategory + '</span></td>'
+                                            +'<td><span style="text-align:end">' + qt + '</span></td>'
+                                            + '<td><span style="text-align:right">' + rqt + '<span></td>'
+                                            +'</tr>';
+
+                            };
+                            $('#VieworderTransaction').append(BindView); //tbluser -> table id 6
+
+                            $("#ServiceOrderStatus").kendoDropDownList().val(data[0].delivaryStatus)
+                            $("#PaymentStatus").kendoDropDownList().val(data[0].PaymentStatus)
+
+                            if (data[0].PaymentStatus == "Done") {
+                                $("#PaymentStatus").data("kendoDropDownList").enable(false)
+                                $("#btnupdate").css("display", "none");
+                                $("#PaymentStatus").kendoDropDownList().val(data[0].PaymentStatus)
+                            }
+                            else {
+                                $("#PaymentStatus").data("kendoDropDownList").enable(true)
+                                $("#btnupdate").css("display", "flex");
+                                $("#PaymentStatus").kendoDropDownList().val(data[0].PaymentStatus)
+                            }
+
+                            if (data[0].delivaryStatus == "delevered") {
+                                $("#ServiceOrderStatus").kendoDropDownList().val(data[0].delivaryStatus)
+                                $("#ServiceOrderStatus").data("kendoDropDownList").enable(false)
+                            }
+                            else {
+                                $("#ServiceOrderStatus").kendoDropDownList().val(data[0].delivaryStatus)
+                                $("#ServiceOrderStatus").data("kendoDropDownList").enable(true)
+                            }
+
+
+                            $("#ServiceId").val(data[0].orderId)
+                        }
+
+                    }
+
+                });
+
+        }
+
+
+        function UpdateTransOrder() {
+            var UpdateTransData = {
+                delivaryStatus: $("#ServiceOrderStatus").kendoDropDownList().val(),
+                PaymentStatus: $("#PaymentStatus").kendoDropDownList().val(),
+                orderId: $("#ServiceId").val()
+            }
+
+            console.log(UpdateTransData)
+
+
+
+            $.ajax({
+                url: API_URL + "api/APIOrderViewDetails",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(UpdateTransData),
+                type: 'Put',
+                success: function (response) {
+                    if (response) {
+                        success_popup('Transaction done successfully !')
+                        setTimeout(function () {
+                            document.getElementById("success-box").style.display = "none";
+                        }, 2000)
+                        window.location.reload();
+                    }
+                    else {
+                        alert_popup('Please fill order details !')
+                        setTimeout(function () {
+                            document.getElementById("alert-box").style.display = "none";
+                        }, 2000)
+                        window.location.reload();
+                    }
+                },
+                error: function (error) {
+                    console.log("error :" + error);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
+

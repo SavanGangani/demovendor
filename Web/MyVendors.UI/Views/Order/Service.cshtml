@@ -1,0 +1,921 @@
+﻿@{
+    ViewBag.Title = "Service";
+    Layout = "~/Views/Shared/_MyVendorLayout.cshtml";
+}
+
+<head>
+    <!--meta tags-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <title>Service</title>
+    <!-- favicon -->
+    <!--<link rel="shortcut icon" href="../../App_Themes/Default/images/favicon.ico" type="image/x-icon">-->
+    <link href="~/App_Themes/Default/css/popup.css" rel="stylesheet" />
+    <script src="~/JavaScript/Order/Order.js"></script>
+    <script src="~/Scripts/pop_up_message.js"></script>
+
+    @*
+        <link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />
+        <link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />
+
+        <link href="~/App_Themes/Default/css/fonts.css" rel="stylesheet" />
+        <link href="~/App_Themes/Default/css/styleguide.css" rel="stylesheet" />
+        <link href="~/App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />
+        <link href="~/App_Themes/Default/css/kendo.Deeppurple.css" rel="stylesheet" />*@
+
+    <!-- css -->
+    @*
+        <link href="../../App_Themes/Default/css/core-pocket.css" rel="stylesheet" />
+        <link href="../../App_Themes/Default/css/core-pocket-responsive.css" rel="stylesheet" />*@
+    <script>
+
+        var API_URL = "@System.Configuration.ConfigurationManager.AppSettings["APIBase"]";
+        var UI_URL = " @System.Configuration.ConfigurationManager.AppSettings["UIBase"]";
+    </script>
+</head>
+
+<body>
+    <div class="mt-container mt-container-fluid h100 pl-20 pr-20">
+        <section id="main_splitter" class="k-spliter h100">
+            <div class="center-pane h100 event-pane-wrapper">
+                <header class="grid-header">
+                    <h5 class="title text-primary display-block">Service</h5>
+                    <div class="searchbar d-flex align-items-center mb-0">
+                        <div class="input-search">
+                            <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                               data-role="aratooltipv2"></i>
+                            <input type="text" name="search" id="search" class="form-control k-textbox" placeholder="Search here..."
+                                   aria-label="Search" autocomplete="off">
+                        </div>
+                    </div>
+                </header>
+                <div class="view-wrapper">
+                    <div class="grid-wrapper h100" id="list_view_content">
+                        <div id="categoryGrid" class="mb-0"></div>
+                        <div id="categoryGrid_pager" class="with-more-option">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- add category window -->
+    <!-- option menu -->
+    <ul id="popup" class="grid-options" style="display: none;">
+        <li class="goto">
+            <span class="text-muted">Go to page</span>
+            <span>
+                <input type="text" id="page_goto" class="form-control" />
+            </span>
+            <span class="text-muted">0</span>
+            <span class="text-muted">pages</span>
+        </li>
+        <li class="rpp">
+            <span class="text-muted">Record per page</span>
+            <select class="k-dropdown" id="pagerDropdown">
+                <option>5</option>
+                <option>10</option>
+                <option>15</option>
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+                <option>200</option>
+            </select>
+        </li>
+    </ul>
+    <!-- option menu -->
+    <!--view Service Detail Popup-->
+    <div id="viewservicedetails" style="display: none;">
+        <hr style="width:100%" />
+        <div class="d-flex">
+            <div>
+                <span id="sviewvname" style="font-size:larger">Vendor Name&nbsp;&nbsp;&nbsp;&nbsp;:</span>
+                <span id="sinvname" style="font-size:larger"></span>
+                <br /><br />
+                @*<span id="sOrderdate" style="font-size:medium">Service Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                    <span id="sWOrderdate" style="font-size:medium"></span>
+                    <br /><br />*@
+                <span id="sOrderNo" style="font-size:medium">Servcie Number&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="sWOrderNo" style="font-size:medium"></span>
+                <br /><br />
+                <span id="sVendorEmail" style="font-size:medium">Vendor Email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="sVemail" style="font-size:medium"></span>
+                <br /><br />
+                <span id="sVendorNo" style="font-size:medium">Vendor Number&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="sVNo" style="font-size:medium"></span>
+                <br /><br />
+                <span id="sOrderStatus" style="font-size:medium">Service Status&nbsp;&nbsp;&nbsp;&nbsp;: </span>
+                <span id="sOstatus" style="font-size:medium"></span>
+            </div>
+            <div>
+                <table class="table" style="width:550px">
+                    <thead style="background:#efefef ;color:black;">
+                        <tr>
+                            <th scope="col">Items</th>
+                            <th scope="col">Repair</th>
+                            <th scope="col">Service</th>
+                            <th scope="col">Notes</th>
+                        </tr>
+                    </thead>
+                </table>
+                <table class="table" align="center" id="ViewService" style="width:550px;max-height:30px;overflow-y:scroll;table-layout:fixed"></table>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Service Popup close-->
+    <div id="deletePopup">
+        <p class="fs-20 font-medium text-center text-dark pb-20 mb-10 pt-20">Are you sure you want to delete this?</p>
+        <div class="text-center">
+            <button type="button" id="btnYesResponse" class="btn btn-raised k-button btn-danger" tabindex="0">Yes</button>
+            <button type="button" id="btnNoResponse" class="btn btn-raised k-button btn-trans" tabindex="0">No</button>
+        </div>
+    </div>
+
+
+    <!-- service update  Popup-->
+    <div id="updateService" style="display: none;">
+        @*
+            <h1>Serviceeee</h1>
+        *@
+        <input type="hidden" id="serviceid" />
+        <div class="row">
+
+
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="addCat">
+                            Date :
+                            <span class="text-danger">*</span>
+                            @*<span>
+                                    <input type="hidden" id="editid" />
+                                    <input type="date" class="form-control" id="update" name="update">
+                                    <span id="upserviceValidDate"></span>
+                                </span>*@
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="addCat">
+                            Date :
+                            <span class="text-danger">*</span>*@
+                        <span>
+                            <input type="hidden" id="editid" />
+                            <input type="date" class="form-control" id="update" name="update">
+                            <span id="upserviceValidDate"></span>
+                        </span>
+                        @*</label>*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="vendorName">Vendor Name:</label>
+                        @* <span id="vn"></span>*@
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="vendorName">Vendor Name:</label>*@
+                        <span id="vn"></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="upvemail">Vendor Email:</label>
+                        @*<span id="upvemail"></span>*@
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="upvemail">Vendor Email:</label>*@
+                        <span id="upvemail"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="upvno">Vendor Contact:</label>
+                        @* <span id="upvno"></span>*@
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @*<label for="upvno">Vendor Contact:</label>*@
+                        <span id="upvno"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="form-grop">
+                <div class="input-search">
+                    <i class="icon-search" data-ara-title="Search" aria-hidden="true"
+                       data-role="aratooltipv2"></i>
+                    <input type="search" name="searchserviceup" id="searchserviceup" class="form-control" placeholder="Search Items..."
+                           aria-label="Search" autocomplete="off">
+                </div>
+            </div>
+        </div>
+        <div class="wrapper" style="overflow-y:auto;">
+            <div class="form-group">
+                <table class="table" align="center">
+                    <thead style="background:rgb(126,87,194); color:white;" width="50%">
+                        <tr>
+                            <th scope="col"><b>Items</b></th>
+                            <th scope="col"><b>Service/Repair</b></th>
+                            <th scope="col"><b>Notes</b></th>
+                        </tr>
+                    </thead>
+                </table>
+                <table class="table" align="center" id="editservice">
+                    <tbody style="max-height:30px;overflow-y:scroll;table-layout:fixed"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="window-footer dir-rtl">
+            <button class="btn btn-primary" id="btnupdate" onclick="updateServcie()">Update</button>
+            @*<button class="btn btn-trans" onclick="closemodel()">Close</button>*@
+        </div>
+    </div>
+
+    <!-- Service update Popup close-->
+    <!-- scripts -->
+
+    <script>
+        var date = new Date();
+        var tdate = date.getDate();
+        var month = date.getMonth() + 1;
+        if (tdate < 10) {
+            tdate = '0' + tdate;
+        }
+        if (month < 10) {
+            month = '0' + month;
+        }
+        var year = date.getUTCFullYear();
+        var minDate = year + "-" + month + "-" + tdate;
+        document.getElementById("update").setAttribute('min', minDate)
+        // console.log(tdate);
+    </script>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+    <script src="../../Scripts/CLARENT/Other/Custom/Custom.js"></script>
+    <link href="~/App_Themes/Default/css/OrderUpdate.css" rel="stylesheet" />
+    <script>
+            function updateServiceValid()
+            {
+
+                var sdatevalid = document.getElementById("update").value;
+
+                if(sdatevalid == "")
+                {
+                    document.getElementById("upserviceValidDate").style.color = "red";
+                    document.getElementById("update").style.color = "red";
+                    document.getElementById("upserviceValidDate").style.color = "Please select date";
+                    return false;
+                }
+                else
+                {
+                    document.getElementById("upserviceValidDate").style.color = "";
+                    document.getElementById("update").style.color = "grey";
+                    document.getElementById("upserviceValidDate").style.color = "";
+                    return true;
+                }
+            }
+    </script>
+    <script>
+
+        $(document).ready(function () {
+            // hide userprofile
+            $(document).click(function () {
+                //window.top.$('body').find('.userprofile-menu').removeClass('open');
+                //window.top.$('body').find('.userprofile').removeClass('active open');
+            });
+
+            // common select dropdown
+            $("select:not([multiple])").kendoDropDownList();
+
+
+            displayServiceList()
+
+            //Contextmenu popover left click for grid pager
+            var popup = $("#popup").kendoPopup({
+                animation: false,
+                anchor: $("#moreOption"),
+                origin: "top right",
+                position: "bottom right",
+                collision: "fit",
+
+            }).data("kendoPopup");
+
+            $("#moreOption").click(function () {
+                $("#popup").data("kendoPopup").open()
+            });
+
+            $("#pagerDropdown").kendoDropDownList({
+                popup: {
+                    appendTo: 'body'
+                }
+            });
+
+            $("#viewservicedetails").kendoWindow({
+                animation: false,
+                width: '900px',
+                height: '350px',
+                visible: false,
+                draggable: false,
+                resizable: false,
+                title: "Service Details",
+                actions: [
+                    "Close"
+                ],
+                modal: true,
+
+            }).data("kendoWindow");
+
+            $("#updateService").kendoWindow({
+                animation: false,
+                width: '600px',
+                height: '400px',
+                visible: false,
+                draggable: false,
+                resizable: false,
+                title: "Update Service ",
+                actions: [
+                    "Close"
+                ],
+                modal: true,
+
+            }).data("kendoWindow");
+
+            $(".datetimepicker").kendoDateTimePicker({
+                value: new Date()
+            });
+
+        });
+
+
+        function openAddEventPopupViewService() {
+            $("#viewservicedetails").data("kendoWindow").center().open();
+        }
+
+
+
+        $('#search').on('input', function () {
+            var q = $("#search").val();
+            var grid = $("#categoryGrid").data("kendoGrid");
+            grid.dataSource.query({
+                page: 1,
+                pageSize: 10,
+                filter: {
+                    logic: "or",
+                    filters: [
+                      { field: "VendorName", operator: "contains", value: q },
+                      { field: "ServiceStatus", operator: "contains", value: q },
+                      { field: "PaymentStatus", operator: "contains", value: q },
+                      { field: "ServiceDate", operator: "contains", value: q },
+                    ]
+                }
+            });
+        });
+
+        function gridDataBound(e) {
+            var grid = e.sender;
+            if (grid.dataSource.total() == 0) {
+                var colCount = grid.columns.length;
+                $(e.sender.wrapper)
+                    .find('tbody')
+
+                .append('<div style="width: 90vw;height: 50vh;display: flex;justify-content: center;"><div style="width: 400px; padding-top: 50px;"><img src="' + UI_URL + '"Image/datanotfound.png" style="height: 250px"></div></div>');
+
+            }
+        };
+
+        function displayServiceList() {
+            $("#categoryGrid").kendoGrid({
+                dataSource: {
+                    //type: "odata",
+                    transport: {
+                        read: API_URL + "/api/ApiService"
+
+                    },
+                    pageSize: 8
+                },
+                dataBound: gridDataBound,
+                height: 500,
+                pageable: true,
+                sortable: true,
+                reorderable: true,
+                schema: {
+                    model: {
+                        id: "ServiceId",
+                        fields: {
+                            ServiceId: { editable: false, nullable: true },
+
+                        }
+                    }
+                },
+                columns: [{ selectable: true, width: "40px" },
+                            {
+                                template: "<div class='grid-action'><a onclick='editS($(this))' class='text-muted'><i class='icon-edit1'></i></a><a onclick='ShowServiceDetails($(this))' class='text-primary delete-btn'><i class='icon-show'></i></a></div>",
+                                field: "Action",
+                                title: "Action",
+                                width: 80
+                            },
+                            {
+                                field: "VendorName",
+                                title: "Vendor Name",
+                            },
+                            {
+                                field: "ServiceStatus",
+                                title: "Service Status",
+                                template: "#if(ServiceStatus == 'Active'){#<div><i class='icon-circle-filled' style='color:green'></i></div>#} else{#<div><i class='icon-circle-filled' style='color:red'></i></div>#}#",
+                            },
+                            {
+                                field: "ServiceDate",
+                                title: "Service Date",
+                                template: '#= kendo.toString(kendo.parseDate(ServiceDate), "MM/dd/yyyy")#'
+                            },
+                            {
+                                field: "PaymentStatus",
+                                title: "Payment Status",
+                            },
+
+                ]
+            });
+
+        }
+
+        function ShowServiceDetails(e) {
+            var grid = $("#categoryGrid").data("kendoGrid");
+            var row = e.select().closest("tr");
+            var dataitem = grid.dataItem(row);
+            console.log(dataitem)
+
+            openAddEventPopupViewService()
+
+            var BindViewService = '';
+            $("#ViewService").empty();
+            $.ajax({
+                sync: true,
+                url: API_URL + "api/ApiService/" + dataitem.ServiceId,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                //processData: false,
+                type: 'GET',
+                success: function (data) {
+                    if (data) {
+                        $("#sWOrderdate").text(dataitem.ServiceDate)
+                        $("#sWOrderNo").text(dataitem.ServiceId)
+                        $("#sinvname").text(dataitem.VendorName)
+                        for (var i = 0; i < data.length; i++) {
+                            $("#sVemail").text(data[i].VendorEmail)
+                            $("#sVNo").text(data[i].VendorMobile)
+                            $("#sOstatus").text(data[i].ServiceStatus)
+                            BindViewService += '<tr><td><span>' + data[i].SubCatName + '</span></td>' +
+                               '<td><input type="checkbox" class="k-checkbox" name="" id="srepair' + i + '" disabled >' +
+                                '<label class="k-checkbox-label"  for="srepair' + i + '"></label></td>' +
+                                '<td><input type="checkbox" class="k-checkbox" id="sservice' + i + '" disabled>' +
+                                '<label class="k-checkbox-label" for="sservice' + i + '"></label></td>' +
+                                '<td><span name="notes">' + data[i].Notes + '</span></td>'
+                            '</tr>';
+                        }
+                        $('#ViewService').append(BindViewService);
+                        //tbluser -> table id 6
+                        //debugger
+                        console.log(dataitem.ServiceId);
+                        for (var j = 0; j < data.length; j++) {
+                            if (data[j].Repair == true) {
+                                document.getElementById("srepair" + j + "").checked = true;
+                            }
+
+                            if (data[j].Service == true) {
+                                document.getElementById("sservice" + j + "").checked = true;
+                            }
+                            if (data[j].Service == false) {
+                                document.getElementById("sservice" + j + "").checked = false;
+
+                            }
+                            if (data[j].Repair == false) {
+                                document.getElementById("srepair" + j + "").checked = false;
+
+                            }
+                        }
+                    }
+                }
+
+            });
+
+        }
+        function OpenEditCourse() {
+
+            $("#updateService").data("kendoWindow").center().open();
+        }
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
+        function editS(e) {
+
+            OpenEditCourse();
+            var BindService = '';
+            var grid = $("#categoryGrid").data("kendoGrid");
+            var row = e.select().closest("tr");
+            var dataitem = grid.dataItem(row);
+
+            //debugger
+            $("#svendorname").val(dataitem.VendorName);
+            document.getElementById('update').value = formatDate(dataitem.ServiceDate);
+            document.getElementById('vn').innerHTML = dataitem.VendorName;
+            document.getElementById('editid').value = dataitem.ServiceId;
+
+
+            $('#editservice').empty()
+            $.ajax({
+                url: API_URL + "api/ApiService/" + dataitem.ServiceId,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                type: "GET",
+                success: function (data) {
+                    console.log('Item data');
+                    console.log(data)
+                    if (data) {
+                        //debugger
+                        for (var i = 0; i < data.length; i++) {
+                            $("#upvemail").text(data[i].VendorEmail)
+                            $("#upvno").text(data[i].VendorMobile)
+                            BindService += '<tr><td><span id="subcat-' + i + '">' + data[i].SubCatName + '</span></td>' +
+                                '<td><input type="checkbox" name="" id="erepair' + i + '" class="k-checkbox" >' +
+                                '<label class="k-checkbox-label" for="erepair' + i + '">Repair</label>' +
+                                '<input type="checkbox" name="" id="eservice' + i + '" class="k-checkbox" >' +
+                                '<label class="k-checkbox-label" for="eservice' + i + '">Service</label><br /></td>' +
+                                '<td><input type="hidden" min="0" value="' + data[i].SubCatId + '" name="upsubid"></td>' +
+                                '<td><input  type="text" class="form-control" value="' + data[i].Notes + '" name="notesedit"></td>' +
+                            '</tr>';
+                        }
+                        $('#editservice').append(BindService); //tbluser -> table id 6
+
+                        for (var j = 0; j < data.length; j++) {
+                            if (data[j].Repair == true) {
+                                document.getElementById("erepair" + j + "").checked = true;
+                            }
+
+                            if (data[j].Service == true) {
+                                document.getElementById("eservice" + j + "").checked = true;
+                            }
+                            if (data[j].Service == false) {
+                                document.getElementById("eservice" + j + "").checked = false;
+
+                            }
+                            if (data[j].Repair == false) {
+                                document.getElementById("erepair" + j + "").checked = false;
+
+                            }
+                        }
+                    }
+
+                }
+            });
+        }
+
+
+        function deletecourse(e) {
+            var grid = $("#categoryGrid").data("kendoGrid");
+            var row = e.select().closest("tr");
+            var dataitem = grid.dataItem(row);
+
+            $("#deletePopup").data("kendoWindow").center().open();
+            $("#btnYesResponse").click(function () {
+                var settings = {
+                    "url": API_URL + "/api/ApiService/" + dataitem.ServiceId,
+                    "method": "Delete",
+                    "timeout": 0,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    //"data": JSON.stringify(dataitem.id),
+                };
+                $.ajax(settings).done(function (response) {
+
+                    if (response) {
+                        success_popup('Delete Successfully !')
+                        setTimeout(function () {
+                            document.getElementById("success-box").style.display = "none";
+                        }, 2000);
+
+                        window.location.reload();
+                    }
+                    else {
+                        alert_popup("Can't delete due to dependency !")
+                        setTimeout(function () {
+                            document.getElementById("success-box").style.display = "none";
+                        }, 2000);
+                        window.location.reload();
+
+                    }
+                });
+            });
+            $("#btnNoResponse").click(function () {
+
+                $("#deletePopup").data("kendoWindow").close();
+                window.location.reload();
+            });
+        }
+        $('#deletePopup').kendoWindow({
+
+            visible: false,
+            draggable: false,
+            resizable: false,
+            defaultFocus: false,
+            modal: true,
+        }).data("kendoWindow");
+
+        $('#deletePopup').parent().addClass('deletepoupwrapper');
+        $('#deletePopup').parent().addClass('k-window-titleless');
+
+
+        $(document).ready(function () {
+            $("#searchserviceup").keyup(function () {
+                if ($("#searchserviceup").val() == "") {
+                    var serviceid1 = $("#serviceid").val()
+                        var BindService = '';
+                        $('#editservice').empty()
+                        $.ajax({
+                            url: API_URL + "api/ApiService/" +serviceid1,
+                            type: "GET",
+                            success: function (data) {
+                                if (data) {
+                                    for (var i = 0; i < data.length; i++) {
+                                        $("#upvemail").text(data[i].VendorEmail)
+                                        $("#upvno").text(data[i].VendorMobile)
+                                        BindService += '<tr><td><span id="subcat-' + i + '">' + data[i].SubCatName + '</span></td>' +
+                                            '<td><input type="checkbox" name="" id="erepair' + i + '" class="k-checkbox" >' +
+                                            '<label class="k-checkbox-label" for="erepair' + i + '">Repair</label>' +
+                                            '<input type="checkbox" name="" id="eservice' + i + '" class="k-checkbox" >' +
+                                            '<label class="k-checkbox-label" for="eservice' + i + '">Service</label><br /></td>' +
+                                            '<td><input type="hidden" min="0" value="' + data[i].SubCatId + '" name="upsubid"></td>' +
+                                            '<td><input type="text" class="form-control" value="' + data[i].Notes + '" name="notesedit"></td>' +
+                                        '</tr>';
+                                    }
+                                    $('#editservice').append(BindService); //tbluser -> table id 6
+
+                                    for (var j = 0; j < data.length; j++) {
+                                        if (data[j].Repair == true) {
+                                            document.getElementById("erepair" + j + "").checked = true;
+                                        }
+
+                                        if (data[j].Service == true) {
+                                            document.getElementById("eservice" + j + "").checked = true;
+                                        }
+                                        if (data[j].Service == false) {
+                                            document.getElementById("eservice" + j + "").checked = false;
+
+                                        }
+                                        if (data[j].Repair == false) {
+                                            document.getElementById("erepair" + j + "").checked = false;
+
+                                        }
+                                    }
+                                }
+
+                            }
+                        });
+                }
+                else {
+                    searchServiceup()
+                }
+
+            });
+        });
+
+        function searchServiceup() {
+            var updata = $("#searchserviceup").val()
+            var BindService = '';
+            $("#editservice").empty();
+            $.ajax({
+                url: API_URL + "api/OrderSearchApi/",
+                type: "PUT",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(updata),
+                success: function (data) {
+                    if (data) {
+                        //debugger
+                        for (var i = 0; i < data.length; i++) {
+                            BindService += '<tr><td><span id="subcat-' + i + '">' + data[i].SubCatName + '</span></td>' +
+                                '<td><input type="checkbox" name="" id="erepair' + i + '" class="k-checkbox" >' +
+                                '<label class="k-checkbox-label" for="erepair' + i + '">Repair</label>' +
+                                '<input type="checkbox" name="" id="eservice' + i + '" class="k-checkbox" >' +
+                                '<label class="k-checkbox-label" for="eservice' + i + '">Service</label><br /></td>' +
+                                '<td><input type="hidden" min="0" value="' + data[i].SubCatId + '" name="upsubid"></td>' +
+                                '<td><input  type="text" class="form-control" value="' + data[i].Notes + '" name="notesedit"></td>' +
+                            '</tr>';
+                        }
+                        $('#editservice').append(BindService); //tbluser -> table id 6
+
+                        for (var j = 0; j < data.length; j++) {
+                            if (data[j].Repair == true) {
+                                document.getElementById("erepair" + j + "").checked = true;
+                            }
+
+                            if (data[j].Service == true) {
+                                document.getElementById("eservice" + j + "").checked = true;
+                            }
+                            if (data[j].Service == false) {
+                                document.getElementById("eservice" + j + "").checked = false;
+
+                            }
+                            if (data[j].Repair == false) {
+                                document.getElementById("erepair" + j + "").checked = false;
+
+                            }
+                        }
+                    }
+
+                }
+            });
+        }
+
+    </script>
+    <script>
+        function editS(e) {
+
+            OpenEditCourse();
+            var BindService = '';
+            var grid = $("#categoryGrid").data("kendoGrid");
+            var row = e.select().closest("tr");
+            var dataitem = grid.dataItem(row);
+            $("#serviceid").val(dataitem.ServiceId)
+            //debugger
+            $("#svendorname").val(dataitem.VendorName);
+            document.getElementById('update').value = formatDate(dataitem.ServiceDate);
+            document.getElementById('vn').innerHTML = dataitem.VendorName;
+            document.getElementById('editid').value = dataitem.ServiceId;
+
+
+            $('#editservice').empty()
+            $.ajax({
+                url: API_URL + "api/ApiService/" + dataitem.ServiceId,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                type: "GET",
+                success: function (data) {
+                    console.log('Item data');
+                    console.log(data)
+                    if (data) {
+
+                        for (var i = 0; i < data.length; i++) {
+                            $("#upvemail").text(data[i].VendorEmail)
+                            $("#upvno").text(data[i].VendorMobile)
+                            BindService += '<tr><td><span id="subcat-' + i + '">' + data[i].SubCatName + '</span></td>' +
+                                '<td><input type="checkbox" name="" id="erepair' + i + '" class="k-checkbox" >' +
+                                '<label class="k-checkbox-label" for="erepair' + i + '">Repair</label>' +
+                                '<input type="checkbox" name="" id="eservice' + i + '" class="k-checkbox" >' +
+                                '<label class="k-checkbox-label" for="eservice' + i + '">Service</label><br /></td>' +
+                                '<td><input type="hidden" min="0" value="' + data[i].SubCatId + '" name="upsubid"></td>' +
+                                '<td><input type="text" class="form-control" value="' + data[i].Notes + '" name="notesedit"></td>' +
+                            '</tr>';
+                        }
+                        $('#editservice').append(BindService); //tbluser -> table id 6
+
+                        for (var j = 0; j < data.length; j++) {
+                            if (data[j].Repair == true) {
+                                document.getElementById("erepair" + j + "").checked = true;
+                            }
+
+                            if (data[j].Service == true) {
+                                document.getElementById("eservice" + j + "").checked = true;
+                            }
+                            if (data[j].Service == false) {
+                                document.getElementById("eservice" + j + "").checked = false;
+
+                            }
+                            if (data[j].Repair == false) {
+                                document.getElementById("erepair" + j + "").checked = false;
+
+                            }
+                        }
+                    }
+
+                }
+            });
+        }
+
+        var UpdateService = [];
+        function updateServcie() {
+            // debugger
+            UpdateService = [];
+            var vname = $('#vn').text();
+            var sdate = $("#update").val();
+            var upvemail = $("#upvemail").text()
+            var upvno = $("#upvno").text()
+            $('#editservice tr').each(function () {
+                //console.log("Start")
+                var Repair;
+                var Service;
+                var servicedate;
+                var subid;
+                var notesedit;
+
+
+                this.cells[0].innerHTML
+
+                //debugger
+                Repair = $(this).closest('tr').find("input").eq(0).is(':checked')
+                Service = $(this).closest('tr').find("input").eq(1).is(':checked')
+                var SSubname = $(this).closest('tr').find("span").eq(0).text()
+                servicedate = document.getElementById("update").value;
+                subid = $(this).closest('tr').find("input[name='upsubid']").eq(0).val();
+                notesedit = $(this).closest('tr').find("input[name='notesedit']").eq(0).val();
+
+
+                var data = {
+                    ServiceDate: servicedate,
+                    ServiceId: $('#editid').val(),
+                    VendorName: vname,
+                    Repair: Repair,
+                    Service: Service,
+                    SubCatName: SSubname,
+                    SubCatId: subid,
+                    VendorEmail: upvemail,
+                    VendorMobile: upvno,
+                    Notes: notesedit
+                }
+
+                //console.log(Repair +" " + Service)
+                if (Repair == true || Servicee == true) {
+                    UpdateService.push(data);
+                }
+
+
+
+                //UpdateService.push(data);
+                //console.log(Service);
+            });
+            if (updateServiceValid()) {
+                if (UpdateService.length == 0) {
+                    alert_popup('Please fill service details !')
+                    setTimeout(function () {
+                        document.getElementById("alert-box").style.display = "none";
+                    }, 2000);
+                }
+                else {
+                    UpdateServiceItems(UpdateService);
+                }
+
+            }
+        }
+
+        function UpdateServiceItems(UpdateService) {
+            var settings = {
+
+                "url": API_URL + "api/ApiService/",
+                "method": "PUT",
+                "timeout": 0,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "data": JSON.stringify(UpdateService),
+            };
+            $.ajax(settings).done(function (response) {
+                if (response == 1) {
+                    success_popup('Service Updated Successfully !')
+                    setTimeout(function () {
+                        document.getElementById("success-box").style.display = "none";
+                    }, 2000);
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
+</body>
+

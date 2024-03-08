@@ -1,0 +1,34 @@
+﻿ .notification-box {
+                   display: none;
+                    width: 400px;
+                    height: 80px;
+                    background-color: #eaf9f2;
+                    /*border: solid 1px #a4e4c4;*/
+                    right: 65px;
+                    bottom: 50px;
+                    max-height: calc(100% - 185px);
+                    overflow: auto;
+                    text-align: right;
+                    border-radius: 3px;
+                    z-index: 99999;
+                    overflow: hidden;   
+                }
+
+                .notification-alert {
+                    padding: 20px 50px 20px 20px;
+                    width:auto;
+                    display: block;
+                    height: 100px;
+                    width: 400px;
+                }
+
+                .notification-alert .pull-left [class^=icon-] {
+                    border-radius: 50%;
+                    height: 44px;
+                    width: 44px;
+                    display: inline-block;
+                    font-size: 20px;
+                    text-align: center;
+                    vertical-align: middle;
+                    line-height: 44px;
+                }

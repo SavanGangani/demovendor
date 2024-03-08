@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <!--meta tags-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <title>Clarent Institute Login</title>
+    <!-- favicon -->
+    <!--<link rel="shortcut icon" href="../../App_Themes/Default/images/favicon.ico" type="image/x-icon">-->
+
+    <link href="../../App_Themes/Default/css/kendo.common.min.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/kendo.default.min.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/fonts.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/styleguide.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/responsive.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/casepoint.comfortable.css" rel="stylesheet" />
+    <link href="../../App_Themes/Default/css/kendo.Yellow.css" rel="stylesheet" />
+
+    <link href="../../App_Themes/Default/css/login.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="login-bg-wrapper d-flex flex-column">
+        <div class="login-logo-header d-flex align-items-center">
+            <a href="#" class="login-logo-wrapper"><img src="../../App_Themes/Default/images/Clarent_Logo.svg"
+                    class="login-logo-img" alt="Clarent Institute" /></a>
+            <span class="separator"></span>
+            <span class="login-branh-text">CorPocket</span>
+        </div>
+        <div class="login-graphic-wrapper flex-1 overflow-auto d-flex flex-wrap">
+            <div class="login-left-wrapper">
+                <div>
+                    <img src="../../App_Themes/Default/images/Login_Graphics.svg" alt="Clarent Institute"
+                        class="login-graphice-img" />
+                    <p class="login-graphice-text">Keep Your Agile Ceremonies Effective and provide a seamless cycle of
+                        successful sprints</p>
+                </div>
+            </div>
+            <div class="login-right-wrapper">
+                <div class="loginpage-box-wrapper">
+                    <h2 class="login-title text-dark font-bold">Sign In</h2>
+                    <div class="loginpage-box-content">
+                        <div class="form-group">
+                            <input type="Email" class="k-textbox login-textbox" placeholder="Email" id="loginEmail">
+                            <span class="login-textbox-icon"><i class="icon-email"></i></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="k-textbox login-textbox" placeholder="Password"
+                                id="loginPassword">
+                            <span class="login-textbox-icon"><i class="icon-locked"></i></span>
+                        </div>
+                        <div class="login-input-check">
+                            <div class="login-input-checkbox">
+                                <input type='checkbox' class='k-checkbox' id='rememeberme'>
+                                <label class='k-checkbox-label' for='rememeberme'>Remember me</label>
+                            </div>
+                            <div class="login-input-checkbox">
+                                <input type='checkbox' class='k-checkbox' id='acceptTs'>
+                                <label class='k-checkbox-label' for='acceptTs'>Accept end user License agreement</label>
+                            </div>
+                        </div>
+                        <div class="form-group pb-10">
+                            <button class="btn btn-primary k-button w100 loginbtn">Log In</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="forgot-pwd btn-link-trans font-medium text-dark outline-dark"
+                                aria-label="Forgot password" id="forgotpassword">Forgot Password?</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Forgot password window-->
+    <div class="forgotpassword-wrapper-window mt-login" id="ForgotPasswordWindow">
+        <div class="form-group mt-10">
+            <input type="text" class="mt-input" required>
+            <span class="mt-bar"></span>
+            <label class="mt-label">User Name</label>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary k-button w100 loginbtn" aria-label="Forgot password"
+                id="forgotpasswordbtn">Send Request</button>
+        </div>
+    </div>
+    <script src="../../Scripts/Kendo/jquery.min.js"></script>
+    <script src="../../Scripts/Kendo/kendo.all.min.js"></script>
+
+    <script>
+        // Forgot password window js
+        $("#ForgotPasswordWindow").kendoWindow({
+            width: 450,
+            title: "Forgot Password",
+            visible: false,
+            draggable: false,
+            resizable: false,
+            actions: [
+                "Close"
+            ],
+            modal: true
+        }).data("kendoWindow");
+
+        $(document).on('click', '#forgotpassword', function () {
+            $("#ForgotPasswordWindow").data("kendoWindow").center().open();
+        });
+
+        //user is tabbing
+        function handleFirstTab(e) {
+            document.body.classList.add('user-is-tabbing');
+            document.removeEventListener('keyup', handleFirstTab);
+            document.addEventListener('mousedown', handleMouseDownOnce);
+        }
+
+        function handleMouseDownOnce() {
+            document.body.classList.remove('user-is-tabbing');
+            document.removeEventListener('mousedown', handleMouseDownOnce);
+            document.addEventListener('keyup', handleFirstTab);
+        }
+
+        window.addEventListener('keyup', handleFirstTab);
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,35 @@
+
+pool:
+  name: Interns-2021
+  demands:
+  - Agent.Name -equals CIAPPSWEB01
+  - msbuild
+
+steps:
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+
+- task: MSBuild@1
+  displayName: 'Build solution myvendor'
+  inputs:
+    solution: '**/*.sln'
+    msbuildVersion: "14.0"
+    platform: 'Any CPU'
+    configuration: Release
+    msbuildArguments: '/p:DeployOnBuild=true  /p:OutputPath=$(Build.ArtifactStagingDirectory)  /p:WebPublishMethod=FileSystem  /p:PrecompileBeforePublish=true;EnableUpdateable=false;DebugSymbols=true   /p:UseMerge=false;DeleteAppCodeCompiledFiles=True;DeleteExistingFiles=True;WDPMergeOption=CreateSeparateAssembly  /p:UseFixedNames=true'
+
+
+- task: IISWebAppDeploymentOnMachineGroup@0
+  displayName: 'Deploy-UI'
+  inputs:
+    WebSiteName: 'myvendor.clarent.institute'
+    Package: '$(Build.ArtifactStagingDirectory)\_PublishedWebsites\MyVendors.UI_Package\MyVendors.UI.zip'
+
+- task: IISWebAppDeploymentOnMachineGroup@0
+  displayName: 'Deploy-API'
+  inputs:
+    WebSiteName: 'myvendorapi.clarent.institute'
+    Package: '$(Build.ArtifactStagingDirectory)\_PublishedWebsites\MyVendors.API_Package\MyVendors.API.zip'
